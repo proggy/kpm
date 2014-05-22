@@ -1,0 +1,131 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module kpm.kern</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="kpm.html"><font color="#ffffff">kpm</font></a>.kern</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/djung/lib/kpm/kern.so">/home/djung/lib/kpm/kern.so</a></font></td></tr></table>
+    <p><tt>Define&nbsp;kernels.&nbsp;Introduce&nbsp;several&nbsp;functions&nbsp;that&nbsp;apply&nbsp;kernel&nbsp;damping<br>
+factors&nbsp;on&nbsp;some&nbsp;given&nbsp;Chebychev&nbsp;moments.<br>
+&nbsp;<br>
+For&nbsp;an&nbsp;introduction&nbsp;into&nbsp;the&nbsp;kernels&nbsp;defined&nbsp;here,&nbsp;please&nbsp;refer&nbsp;to&nbsp;the<br>
+literature&nbsp;[1].&nbsp;According&nbsp;to&nbsp;the&nbsp;literature&nbsp;[1],&nbsp;in&nbsp;almost&nbsp;all&nbsp;cases&nbsp;you&nbsp;will<br>
+want&nbsp;the&nbsp;Jackson&nbsp;kernel.&nbsp;However,&nbsp;in&nbsp;the&nbsp;case&nbsp;of&nbsp;calculating&nbsp;Green&nbsp;functions,<br>
+the&nbsp;Lorentz&nbsp;kernel&nbsp;is&nbsp;said&nbsp;to&nbsp;be&nbsp;better.<br>
+&nbsp;<br>
+[1]&nbsp;Weiße&nbsp;et&nbsp;al.,&nbsp;Rev.&nbsp;Mod.&nbsp;Phys.&nbsp;78,&nbsp;275&nbsp;(2006)<br>
+&nbsp;<br>
+To&nbsp;do:<br>
+--&gt;&nbsp;Implement&nbsp;Wang-and-Zunger&nbsp;kernel.<br>
+&nbsp;<br>
+By&nbsp;Daniel&nbsp;Jung,&nbsp;Jacobs&nbsp;University&nbsp;Bremen,&nbsp;Germany&nbsp;(2012).</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="__builtin__.html">__builtin__</a><br>
+</td><td width="25%" valign=top><a href="kpm.misc.html">kpm.misc</a><br>
+</td><td width="25%" valign=top><a href="numpy.html">numpy</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-all"><strong>all</strong></a>(...)</dt><dd><tt><a href="#-all">all</a>()<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;list&nbsp;of&nbsp;all&nbsp;kernels&nbsp;defined&nbsp;in&nbsp;this&nbsp;module.</tt></dd></dl>
+ <dl><dt><a name="-dirichlet"><strong>dirichlet</strong></a>(...)</dt><dd><tt><a href="#-dirichlet">dirichlet</a>(moments,&nbsp;limit=None,&nbsp;omp=True,&nbsp;num_threads=None,&nbsp;out=None)<br>
+&nbsp;<br>
+Apply&nbsp;the&nbsp;Dirichlet&nbsp;kernel&nbsp;to&nbsp;the&nbsp;given&nbsp;moments.&nbsp;This&nbsp;is&nbsp;the&nbsp;trivial<br>
+kernel&nbsp;where&nbsp;the&nbsp;moments&nbsp;stay&nbsp;untouched&nbsp;(the&nbsp;kernel&nbsp;damping&nbsp;factors&nbsp;are&nbsp;all<br>
+equal&nbsp;to&nbsp;1).&nbsp;It&nbsp;is&nbsp;defined&nbsp;here&nbsp;just&nbsp;for&nbsp;the&nbsp;sake&nbsp;of&nbsp;completeness.&nbsp;All&nbsp;the<br>
+arguments&nbsp;besides&nbsp;"moments"&nbsp;and&nbsp;"out"&nbsp;are&nbsp;just&nbsp;dummies.</tt></dd></dl>
+ <dl><dt><a name="-fejer"><strong>fejer</strong></a>(...)</dt><dd><tt><a href="#-fejer">fejer</a>(moments,&nbsp;limit=None,&nbsp;omp=True,&nbsp;num_threads=None,&nbsp;out=None)<br>
+&nbsp;<br>
+Apply&nbsp;the&nbsp;Fejer&nbsp;kernel&nbsp;to&nbsp;the&nbsp;given&nbsp;moments.&nbsp;If&nbsp;"limit"&nbsp;is&nbsp;None&nbsp;or<br>
+smaller&nbsp;than&nbsp;1,&nbsp;use&nbsp;the&nbsp;length&nbsp;of&nbsp;"moments".<br>
+&nbsp;<br>
+This&nbsp;function&nbsp;only&nbsp;delegates&nbsp;the&nbsp;work&nbsp;to&nbsp;the&nbsp;corresponding&nbsp;low-level<br>
+functions,&nbsp;all&nbsp;beginning&nbsp;with&nbsp;"_fejer_".&nbsp;If&nbsp;no&nbsp;optimal&nbsp;low-level&nbsp;function<br>
+is&nbsp;found&nbsp;for&nbsp;the&nbsp;given&nbsp;datatype,&nbsp;the&nbsp;plain&nbsp;Python&nbsp;implementation&nbsp;"_fejer"<br>
+is&nbsp;used.<br>
+&nbsp;<br>
+If&nbsp;"omp"&nbsp;is&nbsp;True,&nbsp;use&nbsp;available&nbsp;OpenMP-parallelized&nbsp;variants&nbsp;of&nbsp;the<br>
+algorithms.&nbsp;If&nbsp;"num_threads"&nbsp;is&nbsp;not&nbsp;None,&nbsp;set&nbsp;the&nbsp;number&nbsp;of&nbsp;threads<br>
+accordingly.&nbsp;If&nbsp;"num_threads"&nbsp;is&nbsp;smaller&nbsp;than&nbsp;1,&nbsp;determine&nbsp;and&nbsp;use&nbsp;the<br>
+number&nbsp;of&nbsp;processor&nbsp;cores.</tt></dd></dl>
+ <dl><dt><a name="-jackson"><strong>jackson</strong></a>(...)</dt><dd><tt><a href="#-jackson">jackson</a>(moments,&nbsp;limit=None,&nbsp;omp=True,&nbsp;num_threads=None,&nbsp;out=None)<br>
+&nbsp;<br>
+Apply&nbsp;the&nbsp;Jackson&nbsp;kernel&nbsp;to&nbsp;the&nbsp;given&nbsp;moments.&nbsp;If&nbsp;"limit"&nbsp;is&nbsp;None&nbsp;or<br>
+smaller&nbsp;than&nbsp;1,&nbsp;use&nbsp;the&nbsp;length&nbsp;of&nbsp;"moments".<br>
+&nbsp;<br>
+This&nbsp;function&nbsp;only&nbsp;delegates&nbsp;the&nbsp;work&nbsp;to&nbsp;the&nbsp;corresponding&nbsp;low-level<br>
+functions,&nbsp;all&nbsp;beginning&nbsp;with&nbsp;"_jackson_".&nbsp;If&nbsp;no&nbsp;optimal&nbsp;low-level&nbsp;function<br>
+is&nbsp;found&nbsp;for&nbsp;the&nbsp;given&nbsp;datatype,&nbsp;the&nbsp;plain&nbsp;Python&nbsp;implementation&nbsp;"_jackson"<br>
+is&nbsp;used.<br>
+&nbsp;<br>
+If&nbsp;"omp"&nbsp;is&nbsp;True,&nbsp;use&nbsp;available&nbsp;OpenMP-parallelized&nbsp;variants&nbsp;of&nbsp;the<br>
+algorithms.&nbsp;If&nbsp;"num_threads"&nbsp;is&nbsp;not&nbsp;None,&nbsp;set&nbsp;the&nbsp;number&nbsp;of&nbsp;threads<br>
+accordingly.&nbsp;If&nbsp;"num_threads"&nbsp;is&nbsp;smaller&nbsp;than&nbsp;1,&nbsp;determine&nbsp;and&nbsp;use&nbsp;the<br>
+number&nbsp;of&nbsp;processor&nbsp;cores.</tt></dd></dl>
+ <dl><dt><a name="-lanczos"><strong>lanczos</strong></a>(...)</dt><dd><tt><a href="#-lanczos">lanczos</a>(moments,&nbsp;limit=None,&nbsp;param=3,&nbsp;omp=True,&nbsp;num_threads=None,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out=None)<br>
+&nbsp;<br>
+Apply&nbsp;the&nbsp;Lanczos&nbsp;kernel&nbsp;to&nbsp;the&nbsp;given&nbsp;moments.&nbsp;If&nbsp;"limit"&nbsp;is&nbsp;None&nbsp;or<br>
+smaller&nbsp;than&nbsp;1,&nbsp;use&nbsp;the&nbsp;length&nbsp;of&nbsp;"moments".&nbsp;"param"&nbsp;is&nbsp;a&nbsp;free&nbsp;integer<br>
+parameter.&nbsp;It&nbsp;is&nbsp;said&nbsp;that&nbsp;this&nbsp;kernel&nbsp;comes&nbsp;close&nbsp;to&nbsp;the&nbsp;Jackson&nbsp;kernel<br>
+for&nbsp;param=3&nbsp;[1].<br>
+&nbsp;<br>
+This&nbsp;function&nbsp;only&nbsp;delegates&nbsp;the&nbsp;work&nbsp;to&nbsp;the&nbsp;corresponding&nbsp;low-level<br>
+functions,&nbsp;all&nbsp;beginning&nbsp;with&nbsp;"_lanczos_".&nbsp;If&nbsp;no&nbsp;optimal&nbsp;low-level&nbsp;function<br>
+is&nbsp;found&nbsp;for&nbsp;the&nbsp;given&nbsp;datatype,&nbsp;the&nbsp;plain&nbsp;Python&nbsp;implementation&nbsp;"_lanczos"<br>
+is&nbsp;used.<br>
+&nbsp;<br>
+If&nbsp;"omp"&nbsp;is&nbsp;True,&nbsp;use&nbsp;available&nbsp;OpenMP-parallelized&nbsp;variants&nbsp;of&nbsp;the<br>
+algorithms.&nbsp;If&nbsp;"num_threads"&nbsp;is&nbsp;not&nbsp;None,&nbsp;set&nbsp;the&nbsp;number&nbsp;of&nbsp;threads<br>
+accordingly.&nbsp;If&nbsp;"num_threads"&nbsp;is&nbsp;smaller&nbsp;than&nbsp;1,&nbsp;determine&nbsp;and&nbsp;use&nbsp;the<br>
+number&nbsp;of&nbsp;processor&nbsp;cores.<br>
+&nbsp;<br>
+[1]&nbsp;Weiße&nbsp;et&nbsp;al.,&nbsp;Rev.&nbsp;Mod.&nbsp;Phys.&nbsp;78,&nbsp;275&nbsp;(2006)</tt></dd></dl>
+ <dl><dt><a name="-lorentz"><strong>lorentz</strong></a>(...)</dt><dd><tt><a href="#-lorentz">lorentz</a>(moments,&nbsp;limit=None,&nbsp;param=4.,&nbsp;omp=True,&nbsp;num_threads=None,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out=None)<br>
+&nbsp;<br>
+Apply&nbsp;the&nbsp;Lorentz&nbsp;kernel&nbsp;to&nbsp;the&nbsp;given&nbsp;moments.&nbsp;If&nbsp;"limit"&nbsp;is&nbsp;None&nbsp;or<br>
+smaller&nbsp;than&nbsp;1,&nbsp;use&nbsp;the&nbsp;length&nbsp;of&nbsp;"moments".&nbsp;"param"&nbsp;is&nbsp;a&nbsp;free&nbsp;real<br>
+parameter,&nbsp;but&nbsp;it&nbsp;is&nbsp;said&nbsp;to&nbsp;be&nbsp;optimal&nbsp;between&nbsp;3.&nbsp;and&nbsp;5.&nbsp;[1].<br>
+&nbsp;<br>
+This&nbsp;function&nbsp;only&nbsp;delegates&nbsp;the&nbsp;work&nbsp;to&nbsp;the&nbsp;corresponding&nbsp;low-level<br>
+functions,&nbsp;all&nbsp;beginning&nbsp;with&nbsp;"_lorentz_".&nbsp;If&nbsp;no&nbsp;optimal&nbsp;low-level&nbsp;function<br>
+is&nbsp;found&nbsp;for&nbsp;the&nbsp;given&nbsp;datatype,&nbsp;the&nbsp;plain&nbsp;Python&nbsp;implementation&nbsp;"_lorentz"<br>
+is&nbsp;used.<br>
+&nbsp;<br>
+If&nbsp;"omp"&nbsp;is&nbsp;True,&nbsp;use&nbsp;available&nbsp;OpenMP-parallelized&nbsp;variants&nbsp;of&nbsp;the<br>
+algorithms.&nbsp;If&nbsp;"num_threads"&nbsp;is&nbsp;not&nbsp;None,&nbsp;set&nbsp;the&nbsp;number&nbsp;of&nbsp;threads<br>
+accordingly.&nbsp;If&nbsp;"num_threads"&nbsp;is&nbsp;smaller&nbsp;than&nbsp;1,&nbsp;determine&nbsp;and&nbsp;use&nbsp;the<br>
+number&nbsp;of&nbsp;processor&nbsp;cores.<br>
+&nbsp;<br>
+[1]&nbsp;Weiße&nbsp;et&nbsp;al.,&nbsp;Rev.&nbsp;Mod.&nbsp;Phys.&nbsp;78,&nbsp;275&nbsp;(2006)</tt></dd></dl>
+ <dl><dt><a name="-select"><strong>select</strong></a>(...)</dt><dd><tt><a href="#-select">select</a>(string)<br>
+&nbsp;<br>
+Select&nbsp;one&nbsp;of&nbsp;the&nbsp;kernels&nbsp;defined&nbsp;in&nbsp;this&nbsp;module&nbsp;by&nbsp;a&nbsp;given&nbsp;string.<br>
+For&nbsp;example,&nbsp;this&nbsp;could&nbsp;be&nbsp;an&nbsp;option&nbsp;string&nbsp;from&nbsp;a&nbsp;command&nbsp;line&nbsp;option.</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>__created__</strong> = '2012-08-06'<br>
+<strong>__modified__</strong> = '2014-02-08'<br>
+<strong>__test__</strong> = {}</td></tr></table>
+</body></html>

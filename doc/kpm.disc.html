@@ -1,0 +1,67 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module kpm.disc</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="kpm.html"><font color="#ffffff">kpm</font></a>.disc</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/djung/lib/kpm/disc.py">/home/djung/lib/kpm/disc.py</a></font></td></tr></table>
+    <p><tt>Discretize&nbsp;target&nbsp;function.&nbsp;Find&nbsp;a&nbsp;suitable&nbsp;discretization&nbsp;for&nbsp;the<br>
+independent&nbsp;variables&nbsp;of&nbsp;the&nbsp;target&nbsp;function.&nbsp;For&nbsp;example,&nbsp;in&nbsp;the&nbsp;case&nbsp;of&nbsp;the<br>
+(local)&nbsp;density&nbsp;of&nbsp;states,&nbsp;this&nbsp;will&nbsp;be&nbsp;the&nbsp;energy&nbsp;axis,&nbsp;represented&nbsp;by&nbsp;a<br>
+1D-array.<br>
+&nbsp;<br>
+Note&nbsp;that&nbsp;this&nbsp;module&nbsp;works&nbsp;with&nbsp;the&nbsp;rescaled&nbsp;axes,&nbsp;so&nbsp;the&nbsp;output&nbsp;is&nbsp;always<br>
+some&nbsp;discretization&nbsp;of&nbsp;the&nbsp;interval&nbsp;[-1,&nbsp;1].&nbsp;The&nbsp;target&nbsp;quantity&nbsp;still&nbsp;has&nbsp;to<br>
+be&nbsp;scaled&nbsp;back&nbsp;to&nbsp;the&nbsp;original&nbsp;matrix&nbsp;spectrum,&nbsp;together&nbsp;with&nbsp;the&nbsp;discretized<br>
+x-axis.<br>
+&nbsp;<br>
+Todo:<br>
+--&gt;&nbsp;Cython/OpenMP&nbsp;versions?&nbsp;Not&nbsp;really&nbsp;necessary...<br>
+&nbsp;<br>
+Ideas:<br>
+--&gt;&nbsp;support&nbsp;to&nbsp;only&nbsp;get&nbsp;part&nbsp;of&nbsp;the&nbsp;spectrum&nbsp;(some&nbsp;interval&nbsp;within&nbsp;[-1,&nbsp;1])</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="numpy.html">numpy</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-cosine"><strong>cosine</strong></a>(ndisc)</dt><dd><tt>Return&nbsp;cosine-like&nbsp;discretization&nbsp;of&nbsp;the&nbsp;interval&nbsp;[-1,&nbsp;1],&nbsp;using&nbsp;"ndisc"<br>
+discretization&nbsp;steps.&nbsp;This&nbsp;form&nbsp;of&nbsp;discretization&nbsp;is&nbsp;needed&nbsp;if&nbsp;the&nbsp;discrete<br>
+cosine&nbsp;transform&nbsp;(dct)&nbsp;is&nbsp;being&nbsp;used&nbsp;for&nbsp;reconstructing&nbsp;the&nbsp;target&nbsp;function<br>
+(see&nbsp;rcstr-module).&nbsp;The&nbsp;default&nbsp;for&nbsp;"ndisc"&nbsp;should&nbsp;be&nbsp;2*limit,&nbsp;where<br>
+"limit"&nbsp;is&nbsp;the&nbsp;number&nbsp;of&nbsp;moments&nbsp;(truncation&nbsp;limit).<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;the&nbsp;pure&nbsp;Python&nbsp;version&nbsp;of&nbsp;this&nbsp;function,&nbsp;using&nbsp;normal&nbsp;Numpy<br>
+functions.</tt></dd></dl>
+ <dl><dt><a name="-uniform"><strong>uniform</strong></a>(ndisc, eps<font color="#909090">=1e-05</font>)</dt><dd><tt>Return&nbsp;a&nbsp;uniform&nbsp;discretization&nbsp;of&nbsp;the&nbsp;interval&nbsp;[-1,&nbsp;1].&nbsp;If&nbsp;"ndisc"&nbsp;is<br>
+of&nbsp;type&nbsp;int,&nbsp;use&nbsp;"ndisc"&nbsp;discretization&nbsp;steps.&nbsp;If&nbsp;"ndisc"&nbsp;is&nbsp;of&nbsp;type&nbsp;float,<br>
+use&nbsp;it&nbsp;as&nbsp;the&nbsp;stepwidth.&nbsp;The&nbsp;number&nbsp;of&nbsp;steps&nbsp;is&nbsp;then&nbsp;determined&nbsp;by&nbsp;the<br>
+stepwidth&nbsp;and&nbsp;the&nbsp;boundaries&nbsp;(-1,&nbsp;1).<br>
+&nbsp;<br>
+Note:&nbsp;The&nbsp;returned&nbsp;list&nbsp;of&nbsp;numbers&nbsp;will&nbsp;always&nbsp;be&nbsp;symmetric&nbsp;to&nbsp;0.&nbsp;An&nbsp;odd<br>
+number&nbsp;of&nbsp;steps&nbsp;will&nbsp;always&nbsp;include&nbsp;0.&nbsp;Likewise,&nbsp;a&nbsp;given&nbsp;stepwidth&nbsp;will<br>
+always&nbsp;result&nbsp;in&nbsp;an&nbsp;odd&nbsp;number&nbsp;of&nbsp;values&nbsp;including&nbsp;0.</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>__created__</strong> = '2012-08-13'<br>
+<strong>__modified__</strong> = '2013-06-25'</td></tr></table>
+</body></html>
