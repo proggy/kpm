@@ -1,0 +1,221 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>kpm.rcstr &mdash; kpm 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="kpm 0.1 documentation" href="index.html" />
+    <link rel="next" title="kpm.resc" href="resc.html" />
+    <link rel="prev" title="kpm.kern" href="kern.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="resc.html" title="kpm.resc"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="kern.html" title="kpm.kern"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">kpm 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-kpm.rcstr">
+<span id="kpm-rcstr"></span><h1>kpm.rcstr<a class="headerlink" href="#module-kpm.rcstr" title="Permalink to this headline">¶</a></h1>
+<p>Reconstruct the target function, using different methods.</p>
+<p>To do:
+&#8211;&gt; implement fast cosine transform (FCT) algorithm
+&#8211;&gt; create pure Python versions for all the algorithms
+&#8211;&gt; implement fast Fourier transform (FFT) algorithm
+&#8211;&gt; implement discrete Fourier transform (DFT) algorithm
+&#8211;&gt; add VMKPM variants (given a mapping energy -&gt; moment)</p>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="kpm.rcstr.select">
+<tt class="descclassname">kpm.rcstr.</tt><tt class="descname">select</tt><big>(</big><em>string</em><big>)</big><a class="headerlink" href="#kpm.rcstr.select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select one of the reconstruction methods defined in this module by a
+given string. For example, this could be an option string from a command
+line option.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.rcstr.all">
+<tt class="descclassname">kpm.rcstr.</tt><tt class="descname">all</tt><big>(</big><big>)</big><a class="headerlink" href="#kpm.rcstr.all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of all reconstruction methods defined in this module.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.rcstr.std">
+<tt class="descclassname">kpm.rcstr.</tt><tt class="descname">std</tt><big>(</big><big>)</big><a class="headerlink" href="#kpm.rcstr.std" title="Permalink to this definition">¶</a></dt>
+<dd><p>std(moments, disc=None, varmom=None, limits=None, omp=True,
+num_threads=None, out=None)</p>
+<p>Reconstruct target function using the &#8220;naive&#8221; Chebychev series
+expansion. A user-defined x-axis discretization &#8220;disc&#8221; has to be specified.</p>
+<p>This function only delegates the work to the corresponding low-level
+functions, all beginning with &#8220;_std_&#8221;. If no optimal low-level function is
+found for the given datatype, the plain Python implementation &#8220;_std&#8221;
+is used.</p>
+<p>If &#8220;omp&#8221; is True, use available OpenMP-parallelized variants of the
+algorithms. If &#8220;num_threads&#8221; is not None, set the number of threads
+accordingly. If &#8220;num_threads&#8221; is smaller than 1, determine and use the
+number of processor cores.</p>
+<p>If &#8220;varmom&#8221; is given, use a variable moments approach. &#8220;varmom&#8221; has to have
+the same shape as &#8220;disc&#8221;, specifying a truncation limit for each
+discretization step. The values of &#8220;varmom&#8221; must not be greater than the
+length of &#8220;moments&#8221;.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.rcstr.dct">
+<tt class="descclassname">kpm.rcstr.</tt><tt class="descname">dct</tt><big>(</big><em>moments</em>, <em>ndisc=None</em>, <em>omp=True</em>, <em>num_threads=None</em>, <em>out=None</em><big>)</big><a class="headerlink" href="#kpm.rcstr.dct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reconstruct target function using discrete cosine transformation. Use
+the function &#8220;disc.cosine(ndisc)&#8221; from the &#8220;disc&#8221; submodule with the same
+number of discretization steps &#8220;ndisc&#8221; like here to get the corresponding
+x-axis discretization, otherwise, the returned target function values are
+not valid.</p>
+<p>This function only delegates the work to the corresponding low-level
+functions, all beginning with &#8220;_std_&#8221;. If no optimal low-level function is
+found for the given datatype, the plain Python implementation &#8220;_std&#8221;
+is used.</p>
+<p>If &#8220;omp&#8221; is True, use available OpenMP-parallelized variants of the
+algorithms. If &#8220;num_threads&#8221; is not None, set the number of threads
+accordingly. If &#8220;num_threads&#8221; is smaller than 1, determine and use the
+number of processor cores.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.rcstr.fct">
+<tt class="descclassname">kpm.rcstr.</tt><tt class="descname">fct</tt><big>(</big><big>)</big><a class="headerlink" href="#kpm.rcstr.fct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use discrete cosine transform to reconstruct target function. Use
+&#8220;ndisc&#8221; discretization steps. If &#8220;ndisc&#8221; is None, set ndisc=2*limit, where
+limit is the number of moments (truncation limit). If out is None, return
+the results, otherwise save them to the given array.</p>
+<p>This function uses scipy.fftpack.dct.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.rcstr.dft">
+<tt class="descclassname">kpm.rcstr.</tt><tt class="descname">dft</tt><big>(</big><big>)</big><a class="headerlink" href="#kpm.rcstr.dft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reconstruct target function using discrete fourier transform.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.rcstr.fft">
+<tt class="descclassname">kpm.rcstr.</tt><tt class="descname">fft</tt><big>(</big><big>)</big><a class="headerlink" href="#kpm.rcstr.fft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reconstruct target function using fast fourier transform algorithm.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">kpm.rcstr</a><ul>
+<li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="kern.html"
+                        title="previous chapter">kpm.kern</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="resc.html"
+                        title="next chapter">kpm.resc</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/rcstr.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="resc.html" title="kpm.resc"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="kern.html" title="kpm.kern"
+             >previous</a> |</li>
+        <li><a href="index.html">kpm 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Daniel Jung.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

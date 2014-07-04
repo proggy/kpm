@@ -21,11 +21,11 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 #
-"""Create starting vectors for KPM algorithms.
-
-To do:
---> create real random-phase vectors using Gaussian distribution
---> create real random-phase vectors using uniform distribution"""
+"""Create starting vectors for KPM algorithms."""
+#
+# To do:
+# --> create real random-phase vectors using Gaussian distribution
+# --> create real random-phase vectors using uniform distribution"""
 __created__ = '2012-08-06'
 __modified__ = '2014-01-14'
 import numpy
@@ -33,9 +33,9 @@ import numpy
 
 def ind(length, index=0, dtype=float):
     """Return a specific basis state of the site-occupation basis (standard
-    tight-binding basis), i.e. a vector of length "length" with the element at
-    the given index "index" equal to 1 and the rest equal to 0, with datatype
-    "dtype"."""
+    tight-binding basis), i.e. a vector of length *length* with the element at
+    the given index *index* equal to 1 and the rest equal to 0, with datatype
+    *dtype*."""
     # 2012-08-16
     length = int(length)
     index = int(index)
@@ -50,9 +50,9 @@ def ind(length, index=0, dtype=float):
 
 def randind(length, dtype=float):
     """Return a random basis state of the site-occupation basis (standard
-    tight-binding basis), i.e. a vector of length "length" with exactly one
+    tight-binding basis), i.e. a vector of length *length* with exactly one
     random element equal to 1 and the rest equal to 0, with datatype
-    "dtype"."""
+    *dtype*."""
     # 2012-08-16
     length = int(length)
     if length < 1:

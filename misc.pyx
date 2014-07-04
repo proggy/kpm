@@ -24,12 +24,11 @@
 """Miscellaneous function definitions, used in many places throughout the KPM
 package.
 
-This is a Cython package, as some of the functions are called by Cython
-functions.
-
-"""
+This module is written in Cython, as some of the functions have to be called by
+Cython functions in other modules."""
 __created__ = '2012-08-14'
 __modified__ = '2013-07-25'
+
 import numpy
 import os
 cimport openmp
@@ -66,7 +65,7 @@ def npc():
 
 
 def symmetric_interval(x):
-    """If a scalar x is given, return the tuple (-|x|, |x|)."""
+    """If a scalar *x* is given, return the tuple ``(-|x|, |x|)``."""
     if not hasattr(x, '__iter__'):
         x = [x]
     if len(x) == 2:
@@ -78,7 +77,7 @@ def symmetric_interval(x):
 
 
 def set_num_threads(num_threads=None):
-    """If num_threads is not None, set the number of OpenMP threads. If the
+    """If *num_threads* is not *None*, set the number of OpenMP threads. If the
     number is smaller than 1, determine and use the number of processor
     cores."""
     __created__ = '2012-08-14'
@@ -117,12 +116,12 @@ def opt2mathlist(opt, dtype=int):
 def ismath(string):
     """Check if the given string is a mathematical expression (containing only
     mathematical operators like '+', '-', '*', or '/', and of course digits).
-    Can be used to check if "eval" is needed to evaluate an expression in a
-    given string.
+    Can be used to check if :func:`eval` is needed to evaluate an expression in
+    a given string.
 
     Note: This function does not check if the numerical expression is actually
-    valid. It just gives a hint if the given string should be passed to eval or
-    not."""
+    valid. It just gives a hint if the given string should be passed to
+    :func:`eval` or not."""
     __created__ = '2012-08-15'
     # copied from tb.misc.ismath, developed from 2011-09-13 until 2011-10-12
     # former tb.mathexpr from 2011-06-12
@@ -138,12 +137,12 @@ def ismath(string):
 
 
 def evalmath(value, dtype=float):
-    """Cast value to the given data type (dtype). If value is a string, assume
-    that it contains a mathematical expression, and evaluate it with eval
-    before casting it to the specified type.
+    """Cast value to the given data type *dtype*. If *value* is a string,
+    assume that it contains a mathematical expression, and evaluate it with
+    :func:`eval` before casting it to the specified type.
 
-    The function could always use eval, but this is assumed to be slower for
-    values that do not have to be evaluated."""
+    The function could always use :func:`eval`, but this is assumed to be
+    slower for values that do not have to be evaluated."""
     __created__ = '2012-08-15'
     __modified__ = '2012-08-17'
     # copied from tb.misc.ismath, written at 2011-10-12
@@ -155,13 +154,10 @@ def evalmath(value, dtype=float):
 
 
 def isiterable(obj):
-
-    """Check if an object is iterable. Return True for lists, tuples,
+    """Check if the object *obj* is iterable. Return *True* for lists, tuples,
     dictionaries and numpy arrays (all objects that possess an __iter__
-    method).  Return False for scalars (float, int, etc.), strings, bool and
-    None.
-
-    """
+    method). Return *False* for scalars (*float*, *int*, etc.), strings, *bool*
+    and *None*."""
     __created__ = '2012-09-05'
     # copied from tb.misc (written 2011-09-13)
     # former tb.isiterable from 2011-01-27

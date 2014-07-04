@@ -1,0 +1,200 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>kpm.svect &mdash; kpm 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="kpm 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="kpm" href="../kpm.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">kpm 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../kpm.html" accesskey="U">kpm</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for kpm.svect</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c"># Copyright notice</span>
+<span class="c"># ----------------</span>
+<span class="c">#</span>
+<span class="c"># Copyright (C) 2013-2014 Daniel Jung</span>
+<span class="c"># Contact: djungbremen@gmail.com</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it</span>
+<span class="c"># under the terms of the GNU General Public License as published by the Free</span>
+<span class="c"># Software Foundation; either version 2 of the License, or (at your option)</span>
+<span class="c"># any later version.</span>
+<span class="c">#</span>
+<span class="c"># This program is distributed in the hope that it will be useful, but WITHOUT</span>
+<span class="c"># ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or</span>
+<span class="c"># FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for</span>
+<span class="c"># more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License along</span>
+<span class="c"># with this program; if not, write to the Free Software Foundation, Inc.,</span>
+<span class="c"># 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;Create starting vectors for KPM algorithms.&quot;&quot;&quot;</span>
+<span class="c">#</span>
+<span class="c"># To do:</span>
+<span class="c"># --&gt; create real random-phase vectors using Gaussian distribution</span>
+<span class="c"># --&gt; create real random-phase vectors using uniform distribution&quot;&quot;&quot;</span>
+<span class="n">__created__</span> <span class="o">=</span> <span class="s">&#39;2012-08-06&#39;</span>
+<span class="n">__modified__</span> <span class="o">=</span> <span class="s">&#39;2014-01-14&#39;</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+
+<div class="viewcode-block" id="ind"><a class="viewcode-back" href="../../svect.html#kpm.svect.ind">[docs]</a><span class="k">def</span> <span class="nf">ind</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a specific basis state of the site-occupation basis (standard</span>
+<span class="sd">    tight-binding basis), i.e. a vector of length *length* with the element at</span>
+<span class="sd">    the given index *index* equal to 1 and the rest equal to 0, with datatype</span>
+<span class="sd">    *dtype*.&quot;&quot;&quot;</span>
+    <span class="c"># 2012-08-16</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">length</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;length must be positive integer&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">index</span> <span class="o">&gt;</span> <span class="n">length</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;index out of bounds&#39;</span><span class="p">)</span>
+    <span class="n">vect</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">vect</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">vect</span>
+
+</div>
+<div class="viewcode-block" id="randind"><a class="viewcode-back" href="../../svect.html#kpm.svect.randind">[docs]</a><span class="k">def</span> <span class="nf">randind</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a random basis state of the site-occupation basis (standard</span>
+<span class="sd">    tight-binding basis), i.e. a vector of length *length* with exactly one</span>
+<span class="sd">    random element equal to 1 and the rest equal to 0, with datatype</span>
+<span class="sd">    *dtype*.&quot;&quot;&quot;</span>
+    <span class="c"># 2012-08-16</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">length</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;length must be positive integer&#39;</span><span class="p">)</span>
+    <span class="n">vect</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">vect</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">length</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">vect</span>
+
+</div>
+<div class="viewcode-block" id="randphase"><a class="viewcode-back" href="../../svect.html#kpm.svect.randphase">[docs]</a><span class="k">def</span> <span class="nf">randphase</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a normalized random-phase vector.&quot;&quot;&quot;</span>
+    <span class="c"># 2012-08-16 - 2014-01-14</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+    <span class="c">#phi = numpy.random.random_sample(size=(length,)*2)*2*numpy.pi</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_sample</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">length</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">pi</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="nb">complex</span><span class="p">:</span>
+        <span class="n">xi</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1j</span><span class="o">*</span><span class="n">phi</span><span class="p">)</span>
+        <span class="c">#print numpy.mean(xi), numpy.mean(xi**2), numpy.mean(xi**2)**2,</span>
+        <span class="c">#numpy.mean(xi**4)</span>
+        <span class="c">#print abs(xi), xi.shape</span>
+        <span class="c">#vect = xi[0]  # numpy.sum(xi, axis=-1)</span>
+        <span class="c">#vect = numpy.sum(xi, axis=-1)</span>
+        <span class="n">vect</span> <span class="o">=</span> <span class="n">xi</span>
+    <span class="k">elif</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="c">#return numpy.sqrt(2./3)*(1+numpy.cos(phi)) # why is this wrong?</span>
+        <span class="n">xi</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+        <span class="c">#vect =</span>
+        <span class="c">#vect /= numpy.linalg.norm(vect)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;datatype not supported&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">vect</span>
+
+</div>
+<span class="k">def</span> <span class="nf">randphase_backup</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a normalized random-phase vector.&quot;&quot;&quot;</span>
+    <span class="c"># 2012-08-16 - 2014-01-13</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_sample</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">length</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">pi</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="nb">complex</span><span class="p">:</span>
+        <span class="n">vect</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1j</span><span class="o">*</span><span class="n">phi</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="c">#return numpy.sqrt(2./3)*(1+numpy.cos(phi)) # why is this wrong?</span>
+        <span class="n">vect</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;datatype not supported&#39;</span><span class="p">)</span>
+    <span class="n">vect</span> <span class="o">/=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vect</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">vect</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">kpm 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../kpm.html" >kpm</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Daniel Jung.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

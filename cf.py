@@ -22,9 +22,11 @@
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 #
 """This submodule implements special wrappers for certain KPM functions that
-use cofunc objects for input and output instead of simple numpy arrays."""
+use :class:`cofunc.coFunc` objects for input and output instead of simple numpy
+arrays."""
 __created__ = '2013-07-24'
 __modified__ = '2014-01-13'
+
 import cofunc
 import dummy
 import kpm
@@ -42,7 +44,8 @@ except ImportError:
 def ldos(mat, state=0, limit=100, erange=10, enum=None, estep=None,
          kernel='jackson', rcstr_method='std', omp=False, num_threads=None,
          rescaled=False, stateclass=''):
-    """Wrapper for kpm.ldos that returns a cofunc object."""
+    """Wrapper for :func:`kpm.ldos` that returns a :class:`cofunc.coFunc`
+    object."""
     energ, dens \
         = kpm.ldos(mat, state=state, limit=limit, erange=erange, enum=enum,
                    estep=estep, kernel=kernel, rcstr_method=rcstr_method,
@@ -63,7 +66,8 @@ def aldos(scell, erange=10, enum=None, estep=None, count=None, tol=None,
           smooth=10, limit=100, kernel='jackson', rcstr_method='std',
           stateclass=None, spr=1, omp=False, num_threads=0,
           until=None, verbose=False, init=None):
-    """Wrapper for kpm.aldos that uses cofunc objects for input and output."""
+    """Wrapper for :func:`kpm.aldos` that uses :class:`cofunc.coFunc` objects
+    for input and output."""
     #init_energ = init.x if init else None
     init_dens = init.y if init else None
     init_var = init.attrs.var if init else None
@@ -99,7 +103,8 @@ def gldos(scell, erange=10, enum=None, estep=None, count=None, tol=None,
           smooth=10, limit=100, kernel='jackson', rcstr_method='std',
           stateclass=None, spr=1, omp=False, num_threads=0,
           until=None, verbose=False, init=None):
-    """Wrapper for kpm.gldos that uses cofunc objects for input and output."""
+    """Wrapper for :func:`kpm.gldos` that uses :class:`cofunc.coFunc` objects
+    for input and output."""
     #init_energ = init.x if init else None
     init_dens = init.y if init else None
     init_var = init.attrs.var if init else None
@@ -136,7 +141,8 @@ def galdos(scell, erange=10, enum=None, estep=None, count=None, tol=None,
            smooth=10, limit=100, kernel='jackson', rcstr_method='std',
            stateclass=None, spr=1, omp=False, num_threads=0,
            until=None, verbose=False, ainit=None, ginit=None):
-    """Wrapper for kpm.galdos that uses cofunc objects for input and output."""
+    """Wrapper for :func:`kpm.galdos` that uses :class:`cofunc.coFunc` objects
+    for input and output."""
     #init_aenerg = ainit.x if ainit else None
     init_adens = ainit.y if ainit else None
     init_avar = ainit.attrs.var if ainit else None
@@ -188,7 +194,8 @@ def galdos(scell, erange=10, enum=None, estep=None, count=None, tol=None,
 def dos(mat, rcount=None, rtol=None, rsmooth=1, limit=100, erange=10,
         enum=None, estep=None, kernel='jackson', rcstr_method='std', omp=False,
         num_threads=None, rescaled=False, until=None, verbose=False):
-    """Wrapper for kpm.dos that uses cofunc objects for input and output."""
+    """Wrapper for :func:`kpm.dos` that uses :class:`cofunc.coFunc` objects for
+    input and output."""
     # 2014-01-13
 
     # var, count, acc?
@@ -216,7 +223,8 @@ def ados(scell, erange=10, enum=None, estep=None, count=None, tol=None,
          smooth=10, rcount=None, rtol=None, rsmooth=2, limit=100,
          kernel='jackson', rcstr_method='std', omp=False, num_threads=0,
          until=None, verbose=False, init=None):
-    """Wrapper for kpm.ados that uses cofunc objects for input and output."""
+    """Wrapper for :func:`kpm.ados` that uses :class:`cofunc.coFunc` objects
+    for input and output."""
     # 2014-01-13
     #init_energ = init.x if init else None
     init_dens = init.y if init else None

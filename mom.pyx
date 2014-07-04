@@ -24,14 +24,17 @@
 """Calculate Chebychev moments.
 
 (At least) three kinds of moments can be distinguished:
-- expectation values of the form <a|T_n(H)|b>
-- expectation values with a==b, <a|T_n(H)|a> (able to yield 2 moments per loop)
-- traces Tr[A*T_n(H)] (do averaging in high-level module using the above?)
+
+    - expectation values of the form <a|T_n(H)|b>
+    - expectation values with a==b, <a|T_n(H)|a> (able to yield 2 moments per
+      loop)
+    - traces Tr[A*T_n(H)] (do averaging in high-level module using the above?)
 
 Right now, only the second kind <a|T_n(H)|a> is implemented, which is needed
 to calculate the local density of states (LDOS)."""
 __created__ = '2012-08-06'
 __modified__ = '2012-09-05'
+
 import cython
 import numpy
 import scipy.sparse
@@ -56,9 +59,9 @@ def expec(mat, state, limit, omp=False, num_threads=None, out=None):
     """expec(mat, state, limit, omp=False, num_threads=None, out=None)
 
     Calculate Chebychev moments for expectation values of the form <a|T_n(H)|a>
-    for a certain state vector |a> "state" and a Hamiltonian matrix H "mat".
-    Specify required number of moments "limit" (truncation limit). If "out" is
-    not None, store the results in "out" instead of returning them.
+    for a certain state vector |a> *state* and a Hamiltonian matrix H *mat*.
+    Specify required number of moments *limit* (truncation limit). If *out* is
+    not *None*, store the results in *out* instead of returning them.
 
     It is recommended to provide the matrix in the CSR sparse matrix format,
     since this is the best and fastest format for the matrix-vector
@@ -69,9 +72,9 @@ def expec(mat, state, limit, omp=False, num_threads=None, out=None):
     is found for the given datatype, the plain Python implementation "_expec"
     is used (TO DO).
 
-    If "omp" is True, use available OpenMP-parallelized variants of the
-    algorithms. If "num_threads" is not None, set the number of threads
-    accordingly. If "num_threads" is smaller than 1, determine the number of
+    If *omp* is *True*, use available OpenMP-parallelized variants of the
+    algorithms. If *num_threads* is not *None*, set the number of threads
+    accordingly. If *num_threads* is smaller than 1, determine the number of
     processor cores automatically."""
     __created__ = '2012-08-17'
     __modified__ = '2012-08-19'
@@ -576,8 +579,8 @@ def _expec_csr_complex_omp(numpy.ndarray[int, mode="c"] indices,
 cdef inline double dot_real(double *a, double *b, int length):
     """double dot_real(double *a, double *b, int length)
 
-    Calcualte dot product of the two given real vectors "a" and "b" with the
-    given length "length"."""
+    Calcualte dot product of the two given real vectors *a* and *b* with the
+    given length *length*."""
     # 2012-08-17
     # based on tb.kpm.core.dot, developed from 2011-12-08 until 2011-12-11
     cdef:
@@ -593,8 +596,8 @@ cdef inline double dot_real(double *a, double *b, int length):
 cdef inline double dot_real_omp(double *a, double *b, int length):
     """double dot_real_omp(double *a, double *b, int length)
 
-    Calcualte dot product of the two given real vectors "a" and "b" with the
-    given length "length", using OpenMP parallelization."""
+    Calcualte dot product of the two given real vectors *a* and *b* with the
+    given length *length*, using OpenMP parallelization."""
     # 2012-08-17
     # former tb.kpm.core.dot, developed from 2011-12-08 until 2011-12-11
     cdef:
@@ -610,8 +613,8 @@ cdef inline double dot_real_omp(double *a, double *b, int length):
 cdef inline complex dot_complex(complex *a, complex *b, int length):
     """complex dot_complex(complex *a, complex *b, int length)
 
-    Calcualte dot product of the two complex vectors "a" and "b" with the
-    given length "length"."""
+    Calcualte dot product of the two complex vectors *a* and *b* with the
+    given length *length*."""
     # 2012-08-17
     # based on tb.kpm.core.dot, developed from 2011-12-08 until 2011-12-11
     cdef:
@@ -627,8 +630,8 @@ cdef inline complex dot_complex(complex *a, complex *b, int length):
 cdef inline complex dot_complex_omp(complex *a, complex *b, int length):
     """complex dot_complex_omp(complex *a, complex *b, int length)
 
-    Calcualte dot product of the two complex vectors "a" and "b" with the
-    given length "length", using OpenMP parallelization."""
+    Calcualte dot product of the two complex vectors *a* and *b* with the
+    given length *length*, using OpenMP parallelization."""
     # 2012-08-17 until 2012-08-20
     # based on tb.kpm.core.dot, developed from 2011-12-08 until 2011-12-11
     cdef:
@@ -650,8 +653,8 @@ cdef inline void matvec_csr_real(int *ind, int *ptr, double *dat, int rank,
                     double *vect, double *out)
 
     Multiply the given real square CSR sparse matrix, defined by row indices
-    "ind", column pointer "ptr", data values "dat" and rank "rank", with the
-    given vector "vect". Store the resulting vector in "out" (overwrite).
+    *ind*, column pointer *ptr*, data values *dat* and rank *rank*, with the
+    given vector *vect*. Store the resulting vector in *out* (overwrite).
 
     """
     # 2012-08-17
@@ -671,8 +674,8 @@ cdef inline void matvec_csr_real_omp(int *ind, int *ptr, double *dat, int rank,
                         double *vect, double *out)
 
     Multiply the given real square CSR sparse matrix, defined by row indices
-    "ind", column pointer "ptr", data values "dat" and rank "rank", with the
-    given vector "vect". Store the resulting vector in "out" (overwrite).
+    *ind*, column pointer *ptr*, data values *dat* and rank *rank*, with the
+    given vector *vect*. Store the resulting vector in *out* (overwrite).
 
     This is the OpenMP variant of the function, using a parallel for-loop."""
     # 2012-08-17
@@ -692,11 +695,9 @@ cdef inline void matvec_csr_complex(int *ind, int *ptr, complex *dat, int rank,
                         complex *vect, complex *out)
 
     Multiply the given complex square CSR sparse matrix, defined by row indices
-    "ind", column pointer "ptr", data values "dat" and rank "rank", with the
-    given complex vector "vect". Store the resulting vector in "out"
-    (overwrite).
-
-    """
+    *ind*, column pointer *ptr*, data values *dat* and rank *rank*, with the
+    given complex vector *vect*. Store the resulting vector in *out*
+    (overwrite)."""
     # 2012-08-17
     # based on tb.kpm.core.matvec, developed from 2011-12-06 until 2011-12-11
     cdef int i, j
@@ -714,8 +715,8 @@ cdef inline void matvec_csr_complex_omp(int *ind, int *ptr, complex *dat, int
                             complex *vect, complex *out)
 
     Multiply the given complex square CSR sparse matrix, defined by row indices
-    "ind", column pointer "ptr", data values "dat" and rank "rank", with the
-    given complex vector "vect". Store the resulting vector in "out"
+    *ind*, column pointer *ptr*, data values *dat* and rank *rank*, with the
+    given complex vector *vect*. Store the resulting vector in *out*
     (overwrite).
 
     This is the OpenMP variant of the function, using a parallel for-loop."""

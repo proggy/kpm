@@ -1,0 +1,351 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>kpm.cf &mdash; kpm 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="kpm 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="kpm" href="../kpm.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">kpm 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../kpm.html" accesskey="U">kpm</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for kpm.cf</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c"># Copyright notice</span>
+<span class="c"># ----------------</span>
+<span class="c">#</span>
+<span class="c"># Copyright (C) 2013-2014 Daniel Jung</span>
+<span class="c"># Contact: djungbremen@gmail.com</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it</span>
+<span class="c"># under the terms of the GNU General Public License as published by the Free</span>
+<span class="c"># Software Foundation; either version 2 of the License, or (at your option)</span>
+<span class="c"># any later version.</span>
+<span class="c">#</span>
+<span class="c"># This program is distributed in the hope that it will be useful, but WITHOUT</span>
+<span class="c"># ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or</span>
+<span class="c"># FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for</span>
+<span class="c"># more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License along</span>
+<span class="c"># with this program; if not, write to the Free Software Foundation, Inc.,</span>
+<span class="c"># 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;This submodule implements special wrappers for certain KPM functions that</span>
+<span class="sd">use :class:`cofunc.coFunc` objects for input and output instead of simple numpy</span>
+<span class="sd">arrays.&quot;&quot;&quot;</span>
+<span class="n">__created__</span> <span class="o">=</span> <span class="s">&#39;2013-07-24&#39;</span>
+<span class="n">__modified__</span> <span class="o">=</span> <span class="s">&#39;2014-01-13&#39;</span>
+
+<span class="kn">import</span> <span class="nn">cofunc</span>
+<span class="kn">import</span> <span class="nn">dummy</span>
+<span class="kn">import</span> <span class="nn">kpm</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">frog</span> <span class="kn">import</span> <span class="n">Frog</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">Frog</span> <span class="o">=</span> <span class="n">dummy</span><span class="o">.</span><span class="n">Decorator</span>
+
+
+<span class="nd">@Frog</span><span class="p">(</span><span class="n">inmap</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">mat</span><span class="o">=</span><span class="s">&#39;$0/scell&#39;</span><span class="p">),</span> <span class="n">outmap</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s">&#39;$0/ldos&#39;</span><span class="p">},</span>
+      <span class="n">preproc</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">mat</span><span class="o">=</span><span class="k">lambda</span> <span class="n">scell</span><span class="p">:</span> <span class="n">scell</span><span class="o">.</span><span class="n">tbmat</span><span class="p">(</span><span class="n">format</span><span class="o">=</span><span class="s">&#39;csr&#39;</span><span class="p">)),</span>
+      <span class="n">shortopts</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">shortopts</span><span class="p">,</span> <span class="n">longopts</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">longopts</span><span class="p">,</span>
+      <span class="n">opttypes</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">opttypes</span><span class="p">,</span> <span class="n">optdoc</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">optdoc</span><span class="p">)</span>
+<div class="viewcode-block" id="ldos"><a class="viewcode-back" href="../../cf.html#kpm.cf.ldos">[docs]</a><span class="k">def</span> <span class="nf">ldos</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">erange</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">estep</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+         <span class="n">kernel</span><span class="o">=</span><span class="s">&#39;jackson&#39;</span><span class="p">,</span> <span class="n">rcstr_method</span><span class="o">=</span><span class="s">&#39;std&#39;</span><span class="p">,</span> <span class="n">omp</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+         <span class="n">rescaled</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">stateclass</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper for :func:`kpm.ldos` that returns a :class:`cofunc.coFunc`</span>
+<span class="sd">    object.&quot;&quot;&quot;</span>
+    <span class="n">energ</span><span class="p">,</span> <span class="n">dens</span> \
+        <span class="o">=</span> <span class="n">kpm</span><span class="o">.</span><span class="n">ldos</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">erange</span><span class="o">=</span><span class="n">erange</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="n">enum</span><span class="p">,</span>
+                   <span class="n">estep</span><span class="o">=</span><span class="n">estep</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span> <span class="n">rcstr_method</span><span class="o">=</span><span class="n">rcstr_method</span><span class="p">,</span>
+                   <span class="n">omp</span><span class="o">=</span><span class="n">omp</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span> <span class="n">rescaled</span><span class="o">=</span><span class="n">rescaled</span><span class="p">,</span>
+                   <span class="n">stateclass</span><span class="o">=</span><span class="n">stateclass</span><span class="p">)</span>
+    <span class="n">ldos</span> <span class="o">=</span> <span class="n">cofunc</span><span class="o">.</span><span class="n">coFunc</span><span class="p">(</span><span class="n">energ</span><span class="p">,</span> <span class="n">dens</span><span class="p">)</span>
+    <span class="n">ldos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">erange</span><span class="o">=</span><span class="n">erange</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="n">enum</span><span class="p">,</span>
+                      <span class="n">estep</span><span class="o">=</span><span class="n">estep</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span> <span class="n">rcstr_method</span><span class="o">=</span><span class="n">rcstr_method</span><span class="p">,</span>
+                      <span class="n">omp</span><span class="o">=</span><span class="n">omp</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span> <span class="n">rescaled</span><span class="o">=</span><span class="n">rescaled</span><span class="p">,</span>
+                      <span class="n">stateclass</span><span class="o">=</span><span class="n">stateclass</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ldos</span>
+
+</div>
+<span class="nd">@Frog</span><span class="p">(</span><span class="n">inmap</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">scell</span><span class="o">=</span><span class="s">&#39;$0/scell&#39;</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="s">&#39;$0/aldos&#39;</span><span class="p">),</span> <span class="n">outmap</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s">&#39;$0/aldos&#39;</span><span class="p">},</span>
+      <span class="n">shortopts</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">shortopts</span><span class="p">,</span> <span class="n">longopts</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">longopts</span><span class="p">,</span>
+      <span class="n">opttypes</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">opttypes</span><span class="p">,</span> <span class="n">optdoc</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">optdoc</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<div class="viewcode-block" id="aldos"><a class="viewcode-back" href="../../cf.html#kpm.cf.aldos">[docs]</a><span class="k">def</span> <span class="nf">aldos</span><span class="p">(</span><span class="n">scell</span><span class="p">,</span> <span class="n">erange</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">estep</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+          <span class="n">smooth</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="s">&#39;jackson&#39;</span><span class="p">,</span> <span class="n">rcstr_method</span><span class="o">=</span><span class="s">&#39;std&#39;</span><span class="p">,</span>
+          <span class="n">stateclass</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">spr</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">omp</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+          <span class="n">until</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper for :func:`kpm.aldos` that uses :class:`cofunc.coFunc` objects</span>
+<span class="sd">    for input and output.&quot;&quot;&quot;</span>
+    <span class="c">#init_energ = init.x if init else None</span>
+    <span class="n">init_dens</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">y</span> <span class="k">if</span> <span class="n">init</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">init_var</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">var</span> <span class="k">if</span> <span class="n">init</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">init_count</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">count</span> <span class="k">if</span> <span class="n">init</span> <span class="k">else</span> <span class="bp">None</span>
+
+    <span class="n">energ</span><span class="p">,</span> <span class="n">dens</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">acc</span> \
+        <span class="o">=</span> <span class="n">kpm</span><span class="o">.</span><span class="n">aldos</span><span class="p">(</span><span class="n">scell</span><span class="p">,</span> <span class="n">erange</span><span class="o">=</span><span class="n">erange</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="n">enum</span><span class="p">,</span> <span class="n">estep</span><span class="o">=</span><span class="n">estep</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span>
+                    <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
+                    <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span> <span class="n">rcstr_method</span><span class="o">=</span><span class="n">rcstr_method</span><span class="p">,</span>
+                    <span class="n">stateclass</span><span class="o">=</span><span class="n">stateclass</span><span class="p">,</span> <span class="n">spr</span><span class="o">=</span><span class="n">spr</span><span class="p">,</span>
+                    <span class="n">omp</span><span class="o">=</span><span class="n">omp</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span>
+                    <span class="n">until</span><span class="o">=</span><span class="n">until</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                    <span class="n">init_dens</span><span class="o">=</span><span class="n">init_dens</span><span class="p">,</span>  <span class="c"># init_energ=init_energ</span>
+                    <span class="n">init_count</span><span class="o">=</span><span class="n">init_count</span><span class="p">,</span> <span class="n">init_var</span><span class="o">=</span><span class="n">init_var</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">energ</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">init</span><span class="p">:</span>
+        <span class="n">energ</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">aldos</span> <span class="o">=</span> <span class="n">cofunc</span><span class="o">.</span><span class="n">coFunc</span><span class="p">(</span><span class="n">energ</span><span class="p">,</span> <span class="n">dens</span><span class="p">)</span>
+    <span class="n">aldos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">erange</span><span class="o">=</span><span class="n">erange</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="n">enum</span><span class="p">,</span> <span class="n">estep</span><span class="o">=</span><span class="n">estep</span><span class="p">,</span>
+                       <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
+                       <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span> <span class="n">rcstr_method</span><span class="o">=</span><span class="n">rcstr_method</span><span class="p">,</span>
+                       <span class="n">stateclass</span><span class="o">=</span><span class="n">stateclass</span><span class="p">,</span> <span class="n">spr</span><span class="o">=</span><span class="n">spr</span><span class="p">,</span>
+                       <span class="n">omp</span><span class="o">=</span><span class="n">omp</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span>
+                       <span class="n">until</span><span class="o">=</span><span class="n">until</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="n">var</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span>
+                       <span class="n">acc</span><span class="o">=</span><span class="n">acc</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">aldos</span>
+
+</div>
+<span class="nd">@Frog</span><span class="p">(</span><span class="n">inmap</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">scell</span><span class="o">=</span><span class="s">&#39;$0/scell&#39;</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="s">&#39;$0/gldos&#39;</span><span class="p">),</span> <span class="n">outmap</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s">&#39;$0/gldos&#39;</span><span class="p">},</span>
+      <span class="n">shortopts</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">shortopts</span><span class="p">,</span> <span class="n">longopts</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">longopts</span><span class="p">,</span>
+      <span class="n">opttypes</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">opttypes</span><span class="p">,</span> <span class="n">optdoc</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">optdoc</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<div class="viewcode-block" id="gldos"><a class="viewcode-back" href="../../cf.html#kpm.cf.gldos">[docs]</a><span class="k">def</span> <span class="nf">gldos</span><span class="p">(</span><span class="n">scell</span><span class="p">,</span> <span class="n">erange</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">estep</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+          <span class="n">smooth</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="s">&#39;jackson&#39;</span><span class="p">,</span> <span class="n">rcstr_method</span><span class="o">=</span><span class="s">&#39;std&#39;</span><span class="p">,</span>
+          <span class="n">stateclass</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">spr</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">omp</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+          <span class="n">until</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper for :func:`kpm.gldos` that uses :class:`cofunc.coFunc` objects</span>
+<span class="sd">    for input and output.&quot;&quot;&quot;</span>
+    <span class="c">#init_energ = init.x if init else None</span>
+    <span class="n">init_dens</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">y</span> <span class="k">if</span> <span class="n">init</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">init_var</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">var</span> <span class="k">if</span> <span class="n">init</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">init_count</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">count</span> <span class="k">if</span> <span class="n">init</span> <span class="k">else</span> <span class="bp">None</span>
+
+    <span class="n">energ</span><span class="p">,</span> <span class="n">dens</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">acc</span> \
+        <span class="o">=</span> <span class="n">kpm</span><span class="o">.</span><span class="n">gldos</span><span class="p">(</span><span class="n">scell</span><span class="p">,</span> <span class="n">erange</span><span class="o">=</span><span class="n">erange</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="n">enum</span><span class="p">,</span> <span class="n">estep</span><span class="o">=</span><span class="n">estep</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span>
+                    <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
+                    <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span> <span class="n">rcstr_method</span><span class="o">=</span><span class="n">rcstr_method</span><span class="p">,</span>
+                    <span class="n">stateclass</span><span class="o">=</span><span class="n">stateclass</span><span class="p">,</span> <span class="n">spr</span><span class="o">=</span><span class="n">spr</span><span class="p">,</span>
+                    <span class="n">omp</span><span class="o">=</span><span class="n">omp</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span>
+                    <span class="n">until</span><span class="o">=</span><span class="n">until</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                    <span class="n">init_dens</span><span class="o">=</span><span class="n">init_dens</span><span class="p">,</span>  <span class="c"># init_energ=init_energ</span>
+                    <span class="n">init_count</span><span class="o">=</span><span class="n">init_count</span><span class="p">,</span> <span class="n">init_var</span><span class="o">=</span><span class="n">init_var</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">energ</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">init</span><span class="p">:</span>
+        <span class="n">energ</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">gldos</span> <span class="o">=</span> <span class="n">cofunc</span><span class="o">.</span><span class="n">coFunc</span><span class="p">(</span><span class="n">energ</span><span class="p">,</span> <span class="n">dens</span><span class="p">)</span>
+    <span class="n">gldos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">erange</span><span class="o">=</span><span class="n">erange</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="n">enum</span><span class="p">,</span> <span class="n">estep</span><span class="o">=</span><span class="n">estep</span><span class="p">,</span>
+                       <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
+                       <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span> <span class="n">rcstr_method</span><span class="o">=</span><span class="n">rcstr_method</span><span class="p">,</span>
+                       <span class="n">stateclass</span><span class="o">=</span><span class="n">stateclass</span><span class="p">,</span> <span class="n">spr</span><span class="o">=</span><span class="n">spr</span><span class="p">,</span>
+                       <span class="n">omp</span><span class="o">=</span><span class="n">omp</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span>
+                       <span class="n">until</span><span class="o">=</span><span class="n">until</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="n">var</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span>
+                       <span class="n">acc</span><span class="o">=</span><span class="n">acc</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">gldos</span>
+
+</div>
+<span class="nd">@Frog</span><span class="p">(</span><span class="n">inmap</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">scell</span><span class="o">=</span><span class="s">&#39;$0/scell&#39;</span><span class="p">,</span> <span class="n">ainit</span><span class="o">=</span><span class="s">&#39;$0/aldos&#39;</span><span class="p">,</span> <span class="n">ginit</span><span class="o">=</span><span class="s">&#39;$0/gldos&#39;</span><span class="p">),</span>
+      <span class="n">outmap</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s">&#39;$0/aldos&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s">&#39;$0/gldos&#39;</span><span class="p">},</span>
+      <span class="n">shortopts</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">shortopts</span><span class="p">,</span> <span class="n">longopts</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">longopts</span><span class="p">,</span>
+      <span class="n">opttypes</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">opttypes</span><span class="p">,</span> <span class="n">optdoc</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">optdoc</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<div class="viewcode-block" id="galdos"><a class="viewcode-back" href="../../cf.html#kpm.cf.galdos">[docs]</a><span class="k">def</span> <span class="nf">galdos</span><span class="p">(</span><span class="n">scell</span><span class="p">,</span> <span class="n">erange</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">estep</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+           <span class="n">smooth</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="s">&#39;jackson&#39;</span><span class="p">,</span> <span class="n">rcstr_method</span><span class="o">=</span><span class="s">&#39;std&#39;</span><span class="p">,</span>
+           <span class="n">stateclass</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">spr</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">omp</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+           <span class="n">until</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">ainit</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ginit</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper for :func:`kpm.galdos` that uses :class:`cofunc.coFunc` objects</span>
+<span class="sd">    for input and output.&quot;&quot;&quot;</span>
+    <span class="c">#init_aenerg = ainit.x if ainit else None</span>
+    <span class="n">init_adens</span> <span class="o">=</span> <span class="n">ainit</span><span class="o">.</span><span class="n">y</span> <span class="k">if</span> <span class="n">ainit</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">init_avar</span> <span class="o">=</span> <span class="n">ainit</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">var</span> <span class="k">if</span> <span class="n">ainit</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">init_acount</span> <span class="o">=</span> <span class="n">ainit</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">count</span> <span class="k">if</span> <span class="n">ainit</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="c">#init_generg = ginit.x if ginit else None</span>
+    <span class="n">init_gdens</span> <span class="o">=</span> <span class="n">ginit</span><span class="o">.</span><span class="n">y</span> <span class="k">if</span> <span class="n">ginit</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">init_gvar</span> <span class="o">=</span> <span class="n">ginit</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">var</span> <span class="k">if</span> <span class="n">ginit</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">init_gcount</span> <span class="o">=</span> <span class="n">ginit</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">count</span> <span class="k">if</span> <span class="n">ginit</span> <span class="k">else</span> <span class="bp">None</span>
+
+    <span class="n">aenerg</span><span class="p">,</span> <span class="n">adens</span><span class="p">,</span> <span class="n">avar</span><span class="p">,</span> <span class="n">acount</span><span class="p">,</span> <span class="n">aacc</span><span class="p">,</span> <span class="n">generg</span><span class="p">,</span> <span class="n">gdens</span><span class="p">,</span> <span class="n">gvar</span><span class="p">,</span> <span class="n">gcount</span><span class="p">,</span> <span class="n">gacc</span> \
+        <span class="o">=</span> <span class="n">kpm</span><span class="o">.</span><span class="n">galdos</span><span class="p">(</span><span class="n">scell</span><span class="p">,</span> <span class="n">erange</span><span class="o">=</span><span class="n">erange</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="n">enum</span><span class="p">,</span> <span class="n">estep</span><span class="o">=</span><span class="n">estep</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span>
+                     <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
+                     <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span> <span class="n">rcstr_method</span><span class="o">=</span><span class="n">rcstr_method</span><span class="p">,</span>
+                     <span class="n">stateclass</span><span class="o">=</span><span class="n">stateclass</span><span class="p">,</span> <span class="n">spr</span><span class="o">=</span><span class="n">spr</span><span class="p">,</span>
+                     <span class="n">omp</span><span class="o">=</span><span class="n">omp</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span>
+                     <span class="n">until</span><span class="o">=</span><span class="n">until</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                     <span class="n">init_adens</span><span class="o">=</span><span class="n">init_adens</span><span class="p">,</span>  <span class="c"># init_aenerg=init_aenerg</span>
+                     <span class="n">init_acount</span><span class="o">=</span><span class="n">init_acount</span><span class="p">,</span> <span class="n">init_avar</span><span class="o">=</span><span class="n">init_avar</span><span class="p">,</span>
+                     <span class="n">init_gdens</span><span class="o">=</span><span class="n">init_gdens</span><span class="p">,</span>  <span class="c"># init_generg=init_generg</span>
+                     <span class="n">init_gcount</span><span class="o">=</span><span class="n">init_gcount</span><span class="p">,</span> <span class="n">init_gvar</span><span class="o">=</span><span class="n">init_gvar</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">aenerg</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">ainit</span><span class="p">:</span>
+        <span class="n">aenerg</span> <span class="o">=</span> <span class="n">ainit</span><span class="o">.</span><span class="n">x</span>
+    <span class="k">if</span> <span class="n">generg</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">ginit</span><span class="p">:</span>
+        <span class="n">generg</span> <span class="o">=</span> <span class="n">ginit</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">aldos</span> <span class="o">=</span> <span class="n">cofunc</span><span class="o">.</span><span class="n">coFunc</span><span class="p">(</span><span class="n">aenerg</span><span class="p">,</span> <span class="n">adens</span><span class="p">)</span>
+    <span class="n">aldos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">erange</span><span class="o">=</span><span class="n">erange</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="n">enum</span><span class="p">,</span> <span class="n">estep</span><span class="o">=</span><span class="n">estep</span><span class="p">,</span>
+                       <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
+                       <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span> <span class="n">rcstr_method</span><span class="o">=</span><span class="n">rcstr_method</span><span class="p">,</span>
+                       <span class="n">stateclass</span><span class="o">=</span><span class="n">stateclass</span><span class="p">,</span> <span class="n">spr</span><span class="o">=</span><span class="n">spr</span><span class="p">,</span>
+                       <span class="n">omp</span><span class="o">=</span><span class="n">omp</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span>
+                       <span class="n">until</span><span class="o">=</span><span class="n">until</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="n">avar</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">acount</span><span class="p">,</span>
+                       <span class="n">acc</span><span class="o">=</span><span class="n">aacc</span><span class="p">)</span>
+    <span class="n">gldos</span> <span class="o">=</span> <span class="n">cofunc</span><span class="o">.</span><span class="n">coFunc</span><span class="p">(</span><span class="n">generg</span><span class="p">,</span> <span class="n">gdens</span><span class="p">)</span>
+    <span class="n">gldos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">erange</span><span class="o">=</span><span class="n">erange</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="n">enum</span><span class="p">,</span> <span class="n">estep</span><span class="o">=</span><span class="n">estep</span><span class="p">,</span>
+                       <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
+                       <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span> <span class="n">rcstr_method</span><span class="o">=</span><span class="n">rcstr_method</span><span class="p">,</span>
+                       <span class="n">stateclass</span><span class="o">=</span><span class="n">stateclass</span><span class="p">,</span> <span class="n">spr</span><span class="o">=</span><span class="n">spr</span><span class="p">,</span>
+                       <span class="n">omp</span><span class="o">=</span><span class="n">omp</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span>
+                       <span class="n">until</span><span class="o">=</span><span class="n">until</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="n">gvar</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">gcount</span><span class="p">,</span>
+                       <span class="n">acc</span><span class="o">=</span><span class="n">gacc</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">aldos</span><span class="p">,</span> <span class="n">gldos</span>
+
+</div>
+<span class="nd">@Frog</span><span class="p">(</span><span class="n">inmap</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">mat</span><span class="o">=</span><span class="s">&#39;$0/scell&#39;</span><span class="p">),</span> <span class="n">outmap</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s">&#39;$0/dos&#39;</span><span class="p">},</span>
+      <span class="n">preproc</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">mat</span><span class="o">=</span><span class="k">lambda</span> <span class="n">scell</span><span class="p">:</span> <span class="n">scell</span><span class="o">.</span><span class="n">tbmat</span><span class="p">(</span><span class="n">format</span><span class="o">=</span><span class="s">&#39;csr&#39;</span><span class="p">)),</span>
+      <span class="n">shortopts</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">shortopts</span><span class="p">,</span> <span class="n">longopts</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">longopts</span><span class="p">,</span>
+      <span class="n">opttypes</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">opttypes</span><span class="p">,</span> <span class="n">optdoc</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">optdoc</span><span class="p">)</span>
+<div class="viewcode-block" id="dos"><a class="viewcode-back" href="../../cf.html#kpm.cf.dos">[docs]</a><span class="k">def</span> <span class="nf">dos</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">rcount</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">rsmooth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">erange</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+        <span class="n">enum</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">estep</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="s">&#39;jackson&#39;</span><span class="p">,</span> <span class="n">rcstr_method</span><span class="o">=</span><span class="s">&#39;std&#39;</span><span class="p">,</span> <span class="n">omp</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">num_threads</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">rescaled</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">until</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper for :func:`kpm.dos` that uses :class:`cofunc.coFunc` objects for</span>
+<span class="sd">    input and output.&quot;&quot;&quot;</span>
+    <span class="c"># 2014-01-13</span>
+
+    <span class="c"># var, count, acc?</span>
+    <span class="n">energ</span><span class="p">,</span> <span class="n">dens</span> \
+        <span class="o">=</span> <span class="n">kpm</span><span class="o">.</span><span class="n">dos</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">rcount</span><span class="o">=</span><span class="n">rcount</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">rsmooth</span><span class="o">=</span><span class="n">rsmooth</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+                  <span class="n">erange</span><span class="o">=</span><span class="n">erange</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="n">enum</span><span class="p">,</span> <span class="n">estep</span><span class="o">=</span><span class="n">estep</span><span class="p">,</span>
+                  <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span> <span class="n">rcstr_method</span><span class="o">=</span><span class="n">rcstr_method</span><span class="p">,</span>
+                  <span class="n">omp</span><span class="o">=</span><span class="n">omp</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span> <span class="n">rescaled</span><span class="o">=</span><span class="n">rescaled</span><span class="p">,</span>
+                  <span class="n">until</span><span class="o">=</span><span class="n">until</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="n">dos</span> <span class="o">=</span> <span class="n">cofunc</span><span class="o">.</span><span class="n">coFunc</span><span class="p">(</span><span class="n">energ</span><span class="p">,</span> <span class="n">dens</span><span class="p">)</span>
+    <span class="n">dos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">erange</span><span class="o">=</span><span class="n">erange</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="n">enum</span><span class="p">,</span> <span class="n">estep</span><span class="o">=</span><span class="n">estep</span><span class="p">,</span>
+                     <span class="n">rcount</span><span class="o">=</span><span class="n">rcount</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">rsmooth</span><span class="o">=</span><span class="n">rsmooth</span><span class="p">,</span>
+                     <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span> <span class="n">rcstr_method</span><span class="o">=</span><span class="n">rcstr_method</span><span class="p">,</span>
+                     <span class="n">omp</span><span class="o">=</span><span class="n">omp</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span>
+                     <span class="n">until</span><span class="o">=</span><span class="n">until</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+                     <span class="c"># var=var, acc=acc</span>
+    <span class="k">return</span> <span class="n">dos</span>
+
+</div>
+<span class="nd">@Frog</span><span class="p">(</span><span class="n">inmap</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">scell</span><span class="o">=</span><span class="s">&#39;$0/scell&#39;</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="s">&#39;$0/ados&#39;</span><span class="p">),</span> <span class="n">outmap</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s">&#39;$0/ados&#39;</span><span class="p">},</span>
+      <span class="n">shortopts</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">shortopts</span><span class="p">,</span> <span class="n">longopts</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">longopts</span><span class="p">,</span>
+      <span class="n">opttypes</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">opttypes</span><span class="p">,</span> <span class="n">optdoc</span><span class="o">=</span><span class="n">kpm</span><span class="o">.</span><span class="n">optdoc</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<div class="viewcode-block" id="ados"><a class="viewcode-back" href="../../cf.html#kpm.cf.ados">[docs]</a><span class="k">def</span> <span class="nf">ados</span><span class="p">(</span><span class="n">scell</span><span class="p">,</span> <span class="n">erange</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">estep</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+         <span class="n">smooth</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">rcount</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">rsmooth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+         <span class="n">kernel</span><span class="o">=</span><span class="s">&#39;jackson&#39;</span><span class="p">,</span> <span class="n">rcstr_method</span><span class="o">=</span><span class="s">&#39;std&#39;</span><span class="p">,</span> <span class="n">omp</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+         <span class="n">until</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper for :func:`kpm.ados` that uses :class:`cofunc.coFunc` objects</span>
+<span class="sd">    for input and output.&quot;&quot;&quot;</span>
+    <span class="c"># 2014-01-13</span>
+    <span class="c">#init_energ = init.x if init else None</span>
+    <span class="n">init_dens</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">y</span> <span class="k">if</span> <span class="n">init</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">init_var</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">var</span> <span class="k">if</span> <span class="n">init</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">init_count</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">count</span> <span class="k">if</span> <span class="n">init</span> <span class="k">else</span> <span class="bp">None</span>
+
+    <span class="n">energ</span><span class="p">,</span> <span class="n">dens</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">acc</span> \
+        <span class="o">=</span> <span class="n">kpm</span><span class="o">.</span><span class="n">ados</span><span class="p">(</span><span class="n">scell</span><span class="p">,</span> <span class="n">erange</span><span class="o">=</span><span class="n">erange</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="n">enum</span><span class="p">,</span> <span class="n">estep</span><span class="o">=</span><span class="n">estep</span><span class="p">,</span>
+                   <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
+                   <span class="n">rcount</span><span class="o">=</span><span class="n">rcount</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">rsmooth</span><span class="o">=</span><span class="n">rsmooth</span><span class="p">,</span>
+                   <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span> <span class="n">rcstr_method</span><span class="o">=</span><span class="n">rcstr_method</span><span class="p">,</span>
+                   <span class="n">omp</span><span class="o">=</span><span class="n">omp</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span>
+                   <span class="n">until</span><span class="o">=</span><span class="n">until</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                   <span class="n">init_dens</span><span class="o">=</span><span class="n">init_dens</span><span class="p">,</span>  <span class="c"># init_energ=init_energ</span>
+                   <span class="n">init_count</span><span class="o">=</span><span class="n">init_count</span><span class="p">,</span> <span class="n">init_var</span><span class="o">=</span><span class="n">init_var</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">energ</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">init</span><span class="p">:</span>
+        <span class="n">energ</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">ados</span> <span class="o">=</span> <span class="n">cofunc</span><span class="o">.</span><span class="n">coFunc</span><span class="p">(</span><span class="n">energ</span><span class="p">,</span> <span class="n">dens</span><span class="p">)</span>
+    <span class="n">ados</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">erange</span><span class="o">=</span><span class="n">erange</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="n">enum</span><span class="p">,</span> <span class="n">estep</span><span class="o">=</span><span class="n">estep</span><span class="p">,</span>
+                      <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
+                      <span class="n">rcount</span><span class="o">=</span><span class="n">rcount</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">rsmooth</span><span class="o">=</span><span class="n">rsmooth</span><span class="p">,</span>
+                      <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span> <span class="n">rcstr_method</span><span class="o">=</span><span class="n">rcstr_method</span><span class="p">,</span>
+                      <span class="n">omp</span><span class="o">=</span><span class="n">omp</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span>
+                      <span class="n">until</span><span class="o">=</span><span class="n">until</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="n">var</span><span class="p">,</span>
+                      <span class="n">acc</span><span class="o">=</span><span class="n">acc</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ados</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">kpm 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../kpm.html" >kpm</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Daniel Jung.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

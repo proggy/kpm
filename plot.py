@@ -21,10 +21,11 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 #
-"""Define KPM-related plot functions."""
+"""KPM-related plot functions."""
 __created__ = '2013-07-25'
 __modified__ = '2014-03-15'
 # former tb.plot (developed 2011-12-06 until 2013-07-24)
+
 import matplotlib.pyplot as plt
 import dummy
 import numpy
@@ -46,7 +47,8 @@ outmap = {0: None}
 @Frog(inmap=dict(ldos='$0/ldos', label='$0'), outmap=outmap,
       optdoc=optdoc, last=plt.show)
 def pldos(ldos, err=False, fmt='-', label=None):
-    """Plot LDOS (local density of states). Expect cofunc object."""
+    """Plot LDOS (local density of states). Expect :class:`cofunc.coFunc`
+    object."""
     yerr = 2*numpy.sqrt(ldos.attrs.var/ldos.attrs.count) if err else None
     label = label+'/ldos' if label else None
     ax = plt.errorbar(ldos.x, ldos.y, yerr=yerr, fmt=fmt, label=label)
@@ -60,7 +62,7 @@ def pldos(ldos, err=False, fmt='-', label=None):
 @Frog(inmap=dict(dos='$0/dos', label='$0'), outmap=outmap,
       optdoc=optdoc, last=plt.show)
 def pdos(dos, err=False, fmt='-', label=None):
-    """Plot DOS (density of states). Expect cofunc object."""
+    """Plot DOS (density of states). Expect :class:`cofunc.coFunc` object."""
     yerr = 2*numpy.sqrt(dos.attrs.var/dos.attrs.count) if err else None
     label = label+'/dos' if label else None
     ax = plt.errorbar(dos.x, dos.y, yerr=yerr, fmt=fmt, label=label)
@@ -74,7 +76,7 @@ def pdos(dos, err=False, fmt='-', label=None):
 @Frog(inmap=dict(ados='$0/ados', label='$0'), outmap=outmap,
       optdoc=optdoc, last=plt.show)
 def pados(ados, err=False, fmt='-', label=None):
-    """Plot ADOS (density of states). Expect cofunc object."""
+    """Plot ADOS (density of states). Expect :class:`cofunc.coFunc` object."""
     yerr = 2*numpy.sqrt(ados.attrs.var/ados.attrs.count) if err else None
     label = label+'/ados' if label else None
     ax = plt.errorbar(ados.x, ados.y, yerr=yerr, fmt=fmt, label=label)
@@ -89,8 +91,9 @@ def pados(ados, err=False, fmt='-', label=None):
       optdoc=optdoc, last=lambda: plt.show())
 def paldos(aldos, err=False, fmt='-', label=None):
     """Plot ALDOS (arithmetic mean of the local density of states). Expect
-    cofunc object. If err is True, calculate the standard error (using cofunc
-    attributes "var" and "count") and plot errorbars."""
+    :class:`cofunc.coFunc` object. If *err* is *True*, calculate the standard
+    error (using :class:`cofunc.coFunc` attributes *var* and *count*) and plot
+    errorbars."""
     yerr = 2*numpy.sqrt(aldos.attrs.var/aldos.attrs.count) if err else None
     label = label if label else None
     ax = plt.errorbar(aldos.x, aldos.y, yerr=yerr, fmt=fmt, label=label)
@@ -109,9 +112,10 @@ def paldos(aldos, err=False, fmt='-', label=None):
 def paldos_energ(disvals, aldoslist, energs=[0.], err=False, ymin=None,
                  fmt='.:'):
 
-    """Plot ALDOS at the given energies for different disorder. If err is True,
-    calculate the standard error (using cofunc attributes "var" and "count")
-    and plot errorbars (95 % confidence intervals).
+    """Plot ALDOS at the given energies for different disorder. If *err* is
+    *True*, calculate the standard error (using :class:`cofunc.coFunc`
+    attributes *var* and *count*) and plot errorbars (95 % confidence
+    intervals).
 
     """
     # 2014-01-09
@@ -150,9 +154,9 @@ def last():
       optdoc=optdoc, last=last)
 def pgldos(gldos, err=False, fmt='-', color=None, label=None):
     """Plot GLDOS (geometric mean of the local density of states, or typical
-    density of states). Expect cofunc object. If err is True, calculate the
-    standard error (using cofunc attributes "var" and "count") and plot
-    errorbars."""
+    density of states). Expect :class:`cofunc.coFunc` object. If *err* is
+    *True*, calculate the standard error (using :class:`cofunc.coFunc`
+    attributes *var* and *count*) and plot errorbars."""
     color = color or next(plt.gca()._get_lines.color_cycle)
     yerr = 2*numpy.sqrt(gldos.attrs.var/gldos.attrs.count) if err else None
     label = label if label else None
@@ -173,10 +177,9 @@ def last():
       outmap=outmap, optdoc=optdoc, last=last)
 def pagldos(ados, gldos, err=False, color=None, label=None):
     """Plot ADOS (average density of states) and GLDOS (geometric mean of the
-    local density of states). Expect two cofunc objects.  If err is True,
-    calculate the standard error (using cofunc attributes "var" and "count")
-    and plot errorbars.
-    """
+    local density of states). Expect two :class:`cofunc.coFunc` objects.  If
+    *err* is *True*, calculate the standard error (using :class:`cofunc.coFunc`
+    attributes *var* and *count*) and plot errorbars."""
     color = color or next(plt.gca()._get_lines.color_cycle)
     aerr = 1.96*numpy.sqrt(ados.attrs.var/ados.attrs.count) if err else None
     gerr = 1.96*numpy.sqrt(gldos.attrs.var/gldos.attrs.count) if err else None
@@ -200,10 +203,10 @@ def last():
       outmap=outmap, optdoc=optdoc, last=last)
 def pgaldos(aldos, gldos, err=False, color=None, label=None):
     """Plot ALDOS (arithmetic mean of the local density of states) and GLDOS
-    (geometric mean of the local density of states). Expect two cofunc objects.
-    If err is True, calculate the standard error (using cofunc attributes "var"
-    and "count") and plot errorbars.
-    """
+    (geometric mean of the local density of states). Expect two
+    :class:`cofunc.coFunc` objects.  If *err* is *True*, calculate the standard
+    error (using :class:`cofunc.coFunc` attributes *var* and *count*) and plot
+    errorbars."""
     color = color or next(plt.gca()._get_lines.color_cycle)
     aerr = 2*numpy.sqrt(aldos.attrs.var/aldos.attrs.count) if err else None
     gerr = 2*numpy.sqrt(gldos.attrs.var/gldos.attrs.count) if err else None
@@ -229,8 +232,7 @@ def last():
       optdoc=optdoc, last=last)
 def pchecksigma(gldos_list, aldos_list, bins=20, color=None, label=None):
     """Investigate the fluctuation of the standard error of the geometric mean
-    among independent calculations in form of a histogram.
-    """
+    among independent calculations in form of a histogram."""
     # 2014-02-28
     color = color or next(plt.gca()._get_lines.color_cycle)
     gvals = []
@@ -831,8 +833,8 @@ def pchecksigma(gldos_list, aldos_list, bins=20, color=None, label=None):
 
 
 def repeat_items(sequence, n=2):
-    """Return new sequence where each item repeats the given number of
-    times."""
+    """Return new sequence where each item of the old *sequence* repeats the
+    given number *n* of times."""
     new = []
     for item in sequence:
         new += [item]*n

@@ -1,0 +1,184 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>kpm.cf &mdash; kpm 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="kpm 0.1 documentation" href="index.html" />
+    <link rel="next" title="kpm.misc" href="misc.html" />
+    <link rel="prev" title="kpm.plot" href="plot.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="misc.html" title="kpm.misc"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="plot.html" title="kpm.plot"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">kpm 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-kpm.cf">
+<span id="kpm-cf"></span><h1>kpm.cf<a class="headerlink" href="#module-kpm.cf" title="Permalink to this headline">¶</a></h1>
+<p>This submodule implements special wrappers for certain KPM functions that
+use <tt class="xref py py-class docutils literal"><span class="pre">cofunc.coFunc</span></tt> objects for input and output instead of simple numpy
+arrays.</p>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="kpm.cf.ldos">
+<tt class="descclassname">kpm.cf.</tt><tt class="descname">ldos</tt><big>(</big><em>mat</em>, <em>state=0</em>, <em>limit=100</em>, <em>erange=10</em>, <em>enum=None</em>, <em>estep=None</em>, <em>kernel='jackson'</em>, <em>rcstr_method='std'</em>, <em>omp=False</em>, <em>num_threads=None</em>, <em>rescaled=False</em>, <em>stateclass=''</em><big>)</big><a class="reference internal" href="_modules/kpm/cf.html#ldos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.cf.ldos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for <a class="reference internal" href="index.html#kpm.ldos" title="kpm.ldos"><tt class="xref py py-func docutils literal"><span class="pre">kpm.ldos()</span></tt></a> that returns a <tt class="xref py py-class docutils literal"><span class="pre">cofunc.coFunc</span></tt>
+object.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.cf.aldos">
+<tt class="descclassname">kpm.cf.</tt><tt class="descname">aldos</tt><big>(</big><em>scell</em>, <em>erange=10</em>, <em>enum=None</em>, <em>estep=None</em>, <em>count=None</em>, <em>tol=None</em>, <em>smooth=10</em>, <em>limit=100</em>, <em>kernel='jackson'</em>, <em>rcstr_method='std'</em>, <em>stateclass=None</em>, <em>spr=1</em>, <em>omp=False</em>, <em>num_threads=0</em>, <em>until=None</em>, <em>verbose=False</em>, <em>init=None</em><big>)</big><a class="reference internal" href="_modules/kpm/cf.html#aldos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.cf.aldos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for <a class="reference internal" href="index.html#kpm.aldos" title="kpm.aldos"><tt class="xref py py-func docutils literal"><span class="pre">kpm.aldos()</span></tt></a> that uses <tt class="xref py py-class docutils literal"><span class="pre">cofunc.coFunc</span></tt> objects
+for input and output.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.cf.gldos">
+<tt class="descclassname">kpm.cf.</tt><tt class="descname">gldos</tt><big>(</big><em>scell</em>, <em>erange=10</em>, <em>enum=None</em>, <em>estep=None</em>, <em>count=None</em>, <em>tol=None</em>, <em>smooth=10</em>, <em>limit=100</em>, <em>kernel='jackson'</em>, <em>rcstr_method='std'</em>, <em>stateclass=None</em>, <em>spr=1</em>, <em>omp=False</em>, <em>num_threads=0</em>, <em>until=None</em>, <em>verbose=False</em>, <em>init=None</em><big>)</big><a class="reference internal" href="_modules/kpm/cf.html#gldos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.cf.gldos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for <a class="reference internal" href="index.html#kpm.gldos" title="kpm.gldos"><tt class="xref py py-func docutils literal"><span class="pre">kpm.gldos()</span></tt></a> that uses <tt class="xref py py-class docutils literal"><span class="pre">cofunc.coFunc</span></tt> objects
+for input and output.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.cf.galdos">
+<tt class="descclassname">kpm.cf.</tt><tt class="descname">galdos</tt><big>(</big><em>scell</em>, <em>erange=10</em>, <em>enum=None</em>, <em>estep=None</em>, <em>count=None</em>, <em>tol=None</em>, <em>smooth=10</em>, <em>limit=100</em>, <em>kernel='jackson'</em>, <em>rcstr_method='std'</em>, <em>stateclass=None</em>, <em>spr=1</em>, <em>omp=False</em>, <em>num_threads=0</em>, <em>until=None</em>, <em>verbose=False</em>, <em>ainit=None</em>, <em>ginit=None</em><big>)</big><a class="reference internal" href="_modules/kpm/cf.html#galdos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.cf.galdos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for <a class="reference internal" href="index.html#kpm.galdos" title="kpm.galdos"><tt class="xref py py-func docutils literal"><span class="pre">kpm.galdos()</span></tt></a> that uses <tt class="xref py py-class docutils literal"><span class="pre">cofunc.coFunc</span></tt> objects
+for input and output.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.cf.dos">
+<tt class="descclassname">kpm.cf.</tt><tt class="descname">dos</tt><big>(</big><em>mat</em>, <em>rcount=None</em>, <em>rtol=None</em>, <em>rsmooth=1</em>, <em>limit=100</em>, <em>erange=10</em>, <em>enum=None</em>, <em>estep=None</em>, <em>kernel='jackson'</em>, <em>rcstr_method='std'</em>, <em>omp=False</em>, <em>num_threads=None</em>, <em>rescaled=False</em>, <em>until=None</em>, <em>verbose=False</em><big>)</big><a class="reference internal" href="_modules/kpm/cf.html#dos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.cf.dos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for <a class="reference internal" href="index.html#kpm.dos" title="kpm.dos"><tt class="xref py py-func docutils literal"><span class="pre">kpm.dos()</span></tt></a> that uses <tt class="xref py py-class docutils literal"><span class="pre">cofunc.coFunc</span></tt> objects for
+input and output.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.cf.ados">
+<tt class="descclassname">kpm.cf.</tt><tt class="descname">ados</tt><big>(</big><em>scell</em>, <em>erange=10</em>, <em>enum=None</em>, <em>estep=None</em>, <em>count=None</em>, <em>tol=None</em>, <em>smooth=10</em>, <em>rcount=None</em>, <em>rtol=None</em>, <em>rsmooth=2</em>, <em>limit=100</em>, <em>kernel='jackson'</em>, <em>rcstr_method='std'</em>, <em>omp=False</em>, <em>num_threads=0</em>, <em>until=None</em>, <em>verbose=False</em>, <em>init=None</em><big>)</big><a class="reference internal" href="_modules/kpm/cf.html#ados"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.cf.ados" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for <a class="reference internal" href="index.html#kpm.ados" title="kpm.ados"><tt class="xref py py-func docutils literal"><span class="pre">kpm.ados()</span></tt></a> that uses <tt class="xref py py-class docutils literal"><span class="pre">cofunc.coFunc</span></tt> objects
+for input and output.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">kpm.cf</a><ul>
+<li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="plot.html"
+                        title="previous chapter">kpm.plot</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="misc.html"
+                        title="next chapter">kpm.misc</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/cf.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="misc.html" title="kpm.misc"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="plot.html" title="kpm.plot"
+             >previous</a> |</li>
+        <li><a href="index.html">kpm 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Daniel Jung.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,176 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>kpm.disc &mdash; kpm 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="kpm 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="kpm" href="../kpm.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">kpm 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../kpm.html" accesskey="U">kpm</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for kpm.disc</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c"># Copyright notice</span>
+<span class="c"># ----------------</span>
+<span class="c">#</span>
+<span class="c"># Copyright (C) 2013-2014 Daniel Jung</span>
+<span class="c"># Contact: djungbremen@gmail.com</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it</span>
+<span class="c"># under the terms of the GNU General Public License as published by the Free</span>
+<span class="c"># Software Foundation; either version 2 of the License, or (at your option)</span>
+<span class="c"># any later version.</span>
+<span class="c">#</span>
+<span class="c"># This program is distributed in the hope that it will be useful, but WITHOUT</span>
+<span class="c"># ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or</span>
+<span class="c"># FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for</span>
+<span class="c"># more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License along</span>
+<span class="c"># with this program; if not, write to the Free Software Foundation, Inc.,</span>
+<span class="c"># 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;Discretize target function. Find a suitable discretization for the</span>
+<span class="sd">independent variables of the target function. For example, in the case of the</span>
+<span class="sd">(local) density of states, this will be the energy axis, represented by a</span>
+<span class="sd">1D-array.</span>
+
+<span class="sd">Note that this module works with the rescaled axes, so the output is always</span>
+<span class="sd">some discretization of the interval [-1, 1]. The target quantity still has to</span>
+<span class="sd">be scaled back to the original matrix spectrum, together with the discretized</span>
+<span class="sd">x-axis.&quot;&quot;&quot;</span>
+<span class="c">#</span>
+<span class="c"># Todo:</span>
+<span class="c"># --&gt; Cython/OpenMP versions? Not really necessary...</span>
+<span class="c">#</span>
+<span class="c"># Ideas:</span>
+<span class="c"># --&gt; support to only get part of the spectrum (some interval within [-1, 1])</span>
+<span class="c">#</span>
+<span class="n">__created__</span> <span class="o">=</span> <span class="s">&#39;2012-08-13&#39;</span>
+<span class="n">__modified__</span> <span class="o">=</span> <span class="s">&#39;2013-06-25&#39;</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+
+<div class="viewcode-block" id="uniform"><a class="viewcode-back" href="../../disc.html#kpm.disc.uniform">[docs]</a><span class="k">def</span> <span class="nf">uniform</span><span class="p">(</span><span class="n">ndisc</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a uniform discretization of the interval [-1, 1]. If *ndisc* is</span>
+<span class="sd">    of type *int*, use *ndisc* discretization steps. If *ndisc* is of type</span>
+<span class="sd">    *float*, use it as the stepwidth. The number of steps is then determined by</span>
+<span class="sd">    the stepwidth and the boundaries (-1, 1).</span>
+
+<span class="sd">    Note: The returned list of numbers will always be symmetric to 0. An odd</span>
+<span class="sd">    number of steps will always include 0. Likewise, a given stepwidth will</span>
+<span class="sd">    always result in an odd number of values including 0.&quot;&quot;&quot;</span>
+    <span class="c"># 2012-08-18 - 2013-07-21</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ndisc</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s">&#39;.&#39;</span> <span class="ow">in</span> <span class="n">ndisc</span><span class="p">:</span>
+            <span class="n">ndisc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ndisc</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ndisc</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ndisc</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ndisc</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="n">stepwidth</span> <span class="o">=</span> <span class="n">ndisc</span>
+        <span class="n">positive_half</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">stepwidth</span><span class="p">),</span> <span class="mi">1</span><span class="o">-</span><span class="n">eps</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">stepwidth</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="s">&#39;-1&#39;</span><span class="p">,</span> <span class="o">-</span><span class="n">positive_half</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">positive_half</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">+</span><span class="n">eps</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="n">eps</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">ndisc</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="cosine"><a class="viewcode-back" href="../../disc.html#kpm.disc.cosine">[docs]</a><span class="k">def</span> <span class="nf">cosine</span><span class="p">(</span><span class="n">ndisc</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return cosine-like discretization of the interval [-1, 1], using *ndisc*</span>
+<span class="sd">    discretization steps. This form of discretization is needed if the discrete</span>
+<span class="sd">    cosine transform (dct) is being used for reconstructing the target function</span>
+<span class="sd">    (see rcstr-module). The default for *ndisc* should be 2*limit, where</span>
+<span class="sd">    limit is the number of moments (truncation limit).</span>
+
+<span class="sd">    This is the pure Python version of this function, using normal Numpy</span>
+<span class="sd">    functions.&quot;&quot;&quot;</span>
+    <span class="c"># 2012-08-18 - 2013-06-20</span>
+    <span class="n">ndisc</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ndisc</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ndisc</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">/</span><span class="n">ndisc</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">kpm 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../kpm.html" >kpm</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Daniel Jung.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

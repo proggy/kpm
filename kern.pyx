@@ -25,18 +25,21 @@
 factors on some given Chebychev moments.
 
 For an introduction into the kernels defined here, please refer to the
-literature [1]. According to the literature [1], in almost all cases you will
-want the Jackson kernel. However, in the case of calculating Green functions,
-the Lorentz kernel is said to be better.
+literature [1]. According to the literature [1], the Jackson kernel is best
+suited for the calculation of spectral quantities like the density of states
+(DOS) or the local density of states (LDOS).
 
-[1] Weiße et al., Rev. Mod. Phys. 78, 275 (2006)
+References:
 
-To do:
---> Implement Wang-and-Zunger kernel.
-
-By Daniel Jung, Jacobs University Bremen, Germany (2012)."""
+    - [1] Weiße et al., Rev. Mod. Phys. 78, 275 (2006)
+"""
+#
+# To do:
+# --> Implement Wang-and-Zunger kernel.
+#
 __created__ = '2012-08-06'
 __modified__ = '2014-02-08'
+
 import cython
 import numpy
 cimport libc.math
@@ -49,8 +52,8 @@ import misc
 def select(string):
     """select(string)
 
-    Select one of the kernels defined in this module by a given string.
-    For example, this could be an option string from a command line option."""
+    Select one of the kernels defined in this module by a given string.  For
+    example, this could be an option string from a command line option."""
     # 2012-08-14 - 2014-02-08
     string = str(string)
     if string and 'jackson'.startswith(string):
@@ -85,18 +88,18 @@ def all():
 def jackson(moments, limit=None, omp=True, num_threads=None, out=None):
     """jackson(moments, limit=None, omp=True, num_threads=None, out=None)
 
-    Apply the Jackson kernel to the given moments. If "limit" is None or
-    smaller than 1, use the length of "moments".
+    Apply the Jackson kernel to the given moments. If *limit* is *None* or
+    smaller than 1, use the length of *moments* instead.
 
     This function only delegates the work to the corresponding low-level
     functions, all beginning with "_jackson_". If no optimal low-level function
     is found for the given datatype, the plain Python implementation "_jackson"
     is used.
 
-    If "omp" is True, use available OpenMP-parallelized variants of the
-    algorithms. If "num_threads" is not None, set the number of threads
-    accordingly. If "num_threads" is smaller than 1, determine and use the
-    number of processor cores."""
+    If *omp* is *True*, use available OpenMP-parallelized variants of the
+    algorithms. If *num_threads* is not *None*, set the number of threads
+    accordingly. If *num_threads* is smaller than 1, determine and use the
+    number of processor cores instead."""
     # 2012-08-14
     if type(moments) is not numpy.ndarray:
         moments = numpy.ascontiguousarray(moments)
@@ -117,9 +120,9 @@ def _jackson(moments, limit=None, out=None):
     """_jackson(moments, limit=None, out=None)
 
     Apply the Jackson kernel to the given Chebychev moments using the given
-    truncation limit "limit". If "limit" is None or smaller than 1, use the
-    length of "moments". If "out" is not None, save the results in "out"
-    instead of returning them.
+    truncation limit *limit*. If *limit* is *None* or smaller than 1, use the
+    length of *moments* instead. If *out* is not *None*, save the results in
+    *out* instead of returning them.
 
     This is the pure Python variant of the function, using normal numpy arrays
     for the calculation."""
@@ -153,11 +156,9 @@ def _jackson_real(numpy.ndarray[double, mode="c"] moments,
                     ndarray[double, mode="c"] out=None)
 
     Apply the Jackson kernel to the given real Chebychev moments using the
-    given truncation limit "limit". If "limit" is smaller than 1, use the
-    length of "moments". If "out" is not None, save the results in "out"
-    instead of returning them.
-
-    """
+    given truncation limit *limit*. If *limit* is smaller than 1, use the
+    length of *moments*. If *out* is not *None*, save the results in *out*
+    instead of returning them."""
     __created__ = '2012-08-06'
     __modified__ = '2012-08-14'
     # former tb.kpm.core.jackson from 2011-12-08 until 2012-04-12
@@ -200,9 +201,9 @@ def _jackson_real_omp(numpy.ndarray[double, mode="c"] moments,
                         ndarray[double, mode="c"] out=None)
 
     Apply the Jackson kernel to the given real Chebychev moments using the
-    given truncation limit "limit". If "limit" is smaller than 1, use the
-    length of "moments". If "out" is not None, save the results in "out"
-    instead of returning them.
+    given truncation limit *limit*. If *limit* is smaller than 1, use the
+    length of *moments* instead. If *out* is not *None*, save the results in
+    *out* instead of returning them.
 
     This is the OpenMP variant of the function, using a parallel for-loop."""
     __created__ = '2012-08-06'
@@ -247,9 +248,9 @@ def _jackson_complex(numpy.ndarray[complex, mode="c"] moments,
                     ndarray[complex, mode="c"] out=None)
 
     Apply the Jackson kernel to the given complex Chebychev moments using the
-    given truncation limit "limit". If "limit" is smaller than 1, use the
-    length of "moments". If "out" is not None, save the results in "out"
-    instead of returning them."""
+    given truncation limit *limit*. If *limit* is smaller than 1, use the
+    length of *moments* instead. If *out* is not *None*, save the results in
+    *out* instead of returning them."""
     __created__ = '2012-08-06'
     __modified__ = '2012-08-14'
     # former tb.kpm.core.jackson from 2011-12-08 until 2012-04-12
@@ -292,9 +293,9 @@ def _jackson_complex_omp(numpy.ndarray[complex, mode="c"] moments,
                         ndarray[complex, mode="c"] out=None)
 
     Apply the Jackson kernel to the given complex Chebychev moments using the
-    given truncation limit "limit". If "limit" is smaller than 1, use the
-    length of "moments". If "out" is not None, save the results in "out"
-    instead of returning them.
+    given truncation limit *limit*. If *limit* is smaller than 1, use the
+    length of *moments* instead. If *out* is not *None*, save the results in
+    *out* instead of returning them.
 
     This is the OpenMP variant of the function, using a parallel for-loop."""
     __created__ = '2012-08-06'
@@ -337,10 +338,10 @@ def _jackson_complex_omp(numpy.ndarray[complex, mode="c"] moments,
 def dirichlet(moments, limit=None, omp=True, num_threads=None, out=None):
     """dirichlet(moments, limit=None, omp=True, num_threads=None, out=None)
 
-    Apply the Dirichlet kernel to the given moments. This is the trivial
-    kernel where the moments stay untouched (the kernel damping factors are all
-    equal to 1). It is defined here just for the sake of completeness. All the
-    arguments besides "moments" and "out" are just dummies."""
+    Apply the Dirichlet kernel to the given moments. This is the trivial kernel
+    where the moments stay untouched (the kernel damping factors are all equal
+    to 1). It is defined here just for the sake of completeness. All the
+    arguments besides *moments* and *out* are just dummies."""
     __created__ = '2012-08-14'
     if type(moments) is not numpy.ndarray:
         moments = numpy.array(moments)
@@ -366,17 +367,17 @@ def dirichlet(moments, limit=None, omp=True, num_threads=None, out=None):
 def fejer(moments, limit=None, omp=True, num_threads=None, out=None):
     """fejer(moments, limit=None, omp=True, num_threads=None, out=None)
 
-    Apply the Fejer kernel to the given moments. If "limit" is None or
-    smaller than 1, use the length of "moments".
+    Apply the Fejer kernel to the given moments. If *limit* is *None* or
+    smaller than 1, use the length of *moments*.
 
     This function only delegates the work to the corresponding low-level
     functions, all beginning with "_fejer_". If no optimal low-level function
     is found for the given datatype, the plain Python implementation "_fejer"
     is used.
 
-    If "omp" is True, use available OpenMP-parallelized variants of the
-    algorithms. If "num_threads" is not None, set the number of threads
-    accordingly. If "num_threads" is smaller than 1, determine and use the
+    If *omp* is *True*, use available OpenMP-parallelized variants of the
+    algorithms. If *num_threads* is not *None*, set the number of threads
+    accordingly. If *num_threads* is smaller than 1, determine and use the
     number of processor cores."""
     __created__ = '2012-08-14'
     # based on tb.kpm2.kern.jackson from 2012-08-14
@@ -399,9 +400,9 @@ def _fejer(moments, limit=None, out=None):
     """_fejer(moments, limit=None, out=None)
 
     Apply the Fejer kernel to the given Chebychev moments using the given
-    truncation limit "limit". If "limit" is None or smaller than 1, use the
-    length of "moments". If "out" is not None, save the results in "out"
-    instead of returning them.
+    truncation limit *limit*. If *limit* is *None* or smaller than 1, use the
+    length of *moments* instead. If *out* is not *None*, save the results in
+    *out* instead of returning them.
 
     This is the pure Python variant of the function, using normal numpy arrays
     for the calculation."""
@@ -430,9 +431,9 @@ def _fejer_real(numpy.ndarray[double, mode="c"] moments,
                 ndarray[double, mode="c"] out=None)
 
     Apply the Fejer kernel to the given real Chebychev moments using the given
-    truncation limit "limit". If "limit" is smaller than 1, use the length of
-    "moments". If "out" is not None, save the results in "out" instead of
-    returning them."""
+    truncation limit *limit*. If *limit* is smaller than 1, use the length of
+    *moments* instead. If *out* is not *None*, save the results in *out*
+    instead of returning them."""
     __created__ = '2012-08-14'
     # based on tb.kpm2.kern._jackson_real from 2012-08-06 until 2012-08-14
 
@@ -471,9 +472,9 @@ def _fejer_real_omp(numpy.ndarray[double, mode="c"] moments,
                     ndarray[double, mode="c"] out=None)
 
     Apply the Fejer kernel to the given real Chebychev moments using the given
-    truncation limit "limit". If "limit" is smaller than 1, use the length of
-    "moments". If "out" is not None, save the results in "out" instead of
-    returning them.
+    truncation limit *limit*. If *limit* is smaller than 1, use the length of
+    *moments* instead. If *out* is not *None*, save the results in *out*
+    instead of returning them.
 
     This is the OpenMP variant of the function, using a parallel for-loop."""
     __created__ = '2012-08-14'
@@ -514,11 +515,9 @@ def _fejer_complex(numpy.ndarray[complex, mode="c"] moments,
                     ndarray[complex, mode="c"] out=None)
 
     Apply the Fejer kernel to the given complex Chebychev moments using the
-    given truncation limit "limit". If "limit" is smaller than 1, use the
-    length of "moments". If "out" is not None, save the results in "out"
-    instead of returning them.
-
-    """
+    given truncation limit *limit*. If *limit* is smaller than 1, use the
+    length of *moments* instead. If *out* is not *None*, save the results in
+    *out* instead of returning them."""
     __created__ = '2012-08-14'
     # based on tb.kpm2.kern._fejer_complex from 2012-08-06 until 2012-08-14
 
@@ -557,9 +556,9 @@ def _fejer_complex_omp(numpy.ndarray[complex, mode="c"] moments,
                         ndarray[complex, mode="c"] out=None)
 
     Apply the Fejer kernel to the given complex Chebychev moments using the
-    given truncation limit "limit". If "limit" is smaller than 1, use the
-    length of "moments". If "out" is not None, save the results in "out"
-    instead of returning them.
+    given truncation limit *limit*. If *limit* is smaller than 1, use the
+    length of *moments* instead. If *out* is not *None*, save the results in
+    *out* instead of returning them.
 
     This is the OpenMP variant of the function, using a parallel for-loop."""
     __created__ = '2012-08-14'
@@ -601,18 +600,18 @@ def lorentz(moments, limit=None, param=4., omp=True, num_threads=None,
     """lorentz(moments, limit=None, param=4., omp=True, num_threads=None,
             out=None)
 
-    Apply the Lorentz kernel to the given moments. If "limit" is None or
-    smaller than 1, use the length of "moments". "param" is a free real
-    parameter, but it is said to be optimal between 3. and 5. [1].
+    Apply the Lorentz kernel to the given moments. If *limit* is *None* or
+    smaller than 1, use the length of *moments* instead. *param* is a free
+    parameter, but it is said to be optimal between 3.0 and 5.0 [1].
 
     This function only delegates the work to the corresponding low-level
     functions, all beginning with "_lorentz_". If no optimal low-level function
     is found for the given datatype, the plain Python implementation "_lorentz"
     is used.
 
-    If "omp" is True, use available OpenMP-parallelized variants of the
-    algorithms. If "num_threads" is not None, set the number of threads
-    accordingly. If "num_threads" is smaller than 1, determine and use the
+    If *omp* is *True*, use available OpenMP-parallelized variants of the
+    algorithms. If *num_threads* is not *None*, set the number of threads
+    accordingly. If *num_threads* is smaller than 1, determine and use the
     number of processor cores.
 
     [1] Weiße et al., Rev. Mod. Phys. 78, 275 (2006)"""
@@ -638,10 +637,10 @@ def _lorentz(moments, limit=None, param=4., out=None):
     """_lorentz(moments, limit=None, param=4., out=None)
 
     Apply the Lorentz kernel to the given Chebychev moments using the given
-    truncation limit "limit". If "limit" is None or smaller than 1, use the
-    length of "moments". If "out" is not None, save the results in "out"
-    instead of returning them. "param" is a free real parameter, but it is said
-    to be optimal between 3.0 and 5.0 [1].
+    truncation limit *limit*. If *limit* is *None* or smaller than 1, use the
+    length of *moments* instead. If *out* is not *None*, save the results in
+    *out* instead of returning them. *param* is a free parameter, but it is
+    said to be optimal between 3.0 and 5.0 [1].
 
     This is the pure Python variant of the function, using normal numpy arrays
     for the calculation.
@@ -675,10 +674,10 @@ def _lorentz_real(numpy.ndarray[double, mode="c"] moments,
                     ndarray[double, mode="c"] out=None)
 
     Apply the Lorentz kernel to the given real Chebychev moments using the
-    given truncation limit "limit". If "limit" is smaller than 1, use the
-    length of "moments". If "out" is not None, save the results in "out"
-    instead of returning them. "param" is a free real parameter, but it is said
-    to be optimal between 3.0 and 5.0 [1].
+    given truncation limit *limit*. If *limit* is smaller than 1, use the
+    length of *moments* instead. If *out* is not *None*, save the results in
+    *out* instead of returning them. *param* is a free parameter, but it is
+    said to be optimal between 3.0 and 5.0 [1].
 
     [1] Weiße et al., Rev. Mod. Phys. 78, 275 (2006)"""
     __created__ = '2012-08-14'
@@ -722,10 +721,10 @@ def _lorentz_real_omp(numpy.ndarray[double, mode="c"] moments,
                         ndarray[double, mode="c"] out=None)
 
     Apply the Lorentz kernel to the given real Chebychev moments using the
-    given truncation limit "limit". If "limit" is smaller than 1, use the
-    length of "moments". If "out" is not None, save the results in "out"
-    instead of returning them. "param" is a free real parameter, but it is said
-    to be optimal between 3.0 and 5.0 [1].
+    given truncation limit *limit*. If *limit* is smaller than 1, use the
+    length of *moments* instead. If *out* is not *None*, save the results in
+    *out* instead of returning them. *param* is a free parameter, but it is
+    said to be optimal between 3.0 and 5.0 [1].
 
     This is the OpenMP variant of the function, using a parallel for-loop.
 
@@ -771,10 +770,10 @@ def _lorentz_complex(numpy.ndarray[complex, mode="c"] moments,
                     ndarray[complex, mode="c"] out=None)
 
     Apply the Lorentz kernel to the given complex Chebychev moments using the
-    given truncation limit "limit". If "limit" is smaller than 1, use the
-    length of "moments". If "out" is not None, save the results in "out"
-    instead of returning them. "param" is a free real parameter, but it is said
-    to be optimal between 3.0 and 5.0 [1].
+    given truncation limit *limit*. If *limit* is smaller than 1, use the
+    length of *moments* instead. If *out* is not *None*, save the results in
+    *out* instead of returning them. *param* is a free parameter, but it is
+    said to be optimal between 3.0 and 5.0 [1].
 
     [1] Weiße et al., Rev. Mod. Phys. 78, 275 (2006)"""
     __created__ = '2012-08-14'
@@ -818,10 +817,10 @@ def _lorentz_complex_omp(numpy.ndarray[complex, mode="c"] moments,
                         ndarray[complex, mode="c"] out=None)
 
     Apply the Lorentz kernel to the given complex Chebychev moments using the
-    given truncation limit "limit". If "limit" is smaller than 1, use the
-    length of "moments". If "out" is not None, save the results in "out"
-    instead of returning them. "param" is a free real parameter, but it is said
-    to be optimal between 3.0 and 5.0 [1].
+    given truncation limit *limit*. If *limit* is smaller than 1, use the
+    length of *moments* instead. If *out* is not *None*, save the results in
+    *out* instead of returning them. *param* is a free parameter, but it is
+    said to be optimal between 3.0 and 5.0 [1].
 
     This is the OpenMP variant of the function, using a parallel for-loop.
 
@@ -866,19 +865,19 @@ def lanczos(moments, limit=None, param=3, omp=True, num_threads=None,
     """lanczos(moments, limit=None, param=3, omp=True, num_threads=None,
             out=None)
 
-    Apply the Lanczos kernel to the given moments. If "limit" is None or
-    smaller than 1, use the length of "moments". "param" is a free integer
-    parameter. It is said that this kernel comes close to the Jackson kernel
-    for param=3 [1].
+    Apply the Lanczos kernel to the given moments. If *limit* is *None* or
+    smaller than 1, use the length of *moments* instead. *param* is a free
+    integer parameter. It is said that this kernel comes close to the Jackson
+    kernel for param=3 [1].
 
     This function only delegates the work to the corresponding low-level
     functions, all beginning with "_lanczos_". If no optimal low-level function
     is found for the given datatype, the plain Python implementation "_lanczos"
     is used.
 
-    If "omp" is True, use available OpenMP-parallelized variants of the
-    algorithms. If "num_threads" is not None, set the number of threads
-    accordingly. If "num_threads" is smaller than 1, determine and use the
+    If *omp* is *True*, use available OpenMP-parallelized variants of the
+    algorithms. If *num_threads* is not None, set the number of threads
+    accordingly. If *num_threads* is smaller than 1, determine and use the
     number of processor cores.
 
     [1] Weiße et al., Rev. Mod. Phys. 78, 275 (2006)"""
@@ -901,12 +900,12 @@ def lanczos(moments, limit=None, param=3, omp=True, num_threads=None,
 
 
 def _lanczos(moments, limit=None, param=3, out=None):
-    """_lanczos(moments, limit=None, param=4., out=None)
+    """_lanczos(moments, limit=None, param=3, out=None)
 
     Apply the Lanczos kernel to the given Chebychev moments using the given
-    truncation limit "limit". If "limit" is None or smaller than 1, use the
-    length of "moments". If "out" is not None, save the results in "out"
-    instead of returning them. "param" is a free integer parameter. It is said
+    truncation limit *limit*. If *limit* is None or smaller than 1, use the
+    length of *moments* instead. If *out* is not *None*, save the results in *out*
+    instead of returning them. *param* is a free integer parameter. It is said
     that this kernel comes close to the Jackson kernel for param=3 [1].
 
     This is the pure Python variant of the function, using normal numpy arrays
@@ -943,10 +942,10 @@ def _lanczos_real(numpy.ndarray[double, mode="c"] moments,
                     ndarray[double, mode="c"] out=None)
 
     Apply the Lanczos kernel to the given real Chebychev moments using the
-    given truncation limit "limit". If "limit" is smaller than 1, use the
-    length of "moments". If "out" is not None, save the results in "out"
-    instead of returning them. "param" is a free integer parameter. It is said
-    that this kernel comes close to the Jackson kernel for param=3 [1].
+    given truncation limit *limit*. If *limit* is smaller than 1, use the
+    length of *moments* instead. If *out* is not *None*, save the results in
+    *out* instead of returning them. *param* is a free integer parameter. It is
+    said that this kernel comes close to the Jackson kernel for param=3 [1].
 
     [1] Weiße et al., Rev. Mod. Phys. 78, 275 (2006)"""
     __created__ = '2012-08-14'
@@ -991,10 +990,10 @@ def _lanczos_real_omp(numpy.ndarray[double, mode="c"] moments,
                         ndarray[double, mode="c"] out=None)
 
     Apply the Lanczos kernel to the given real Chebychev moments using the
-    given truncation limit "limit". If "limit" is smaller than 1, use the
-    length of "moments". If "out" is not None, save the results in "out"
-    instead of returning them. "param" is a free integer parameter. It is said
-    that this kernel comes close to the Jackson kernel for param=3 [1].
+    given truncation limit *limit*. If *limit* is smaller than 1, use the
+    length of *moments* instead. If *out* is not *None*, save the results in
+    *out* instead of returning them. *param* is a free integer parameter. It is
+    said that this kernel comes close to the Jackson kernel for param=3 [1].
 
     This is the OpenMP variant of the function, using a parallel for-loop.
 
@@ -1041,10 +1040,10 @@ def _lanczos_complex(numpy.ndarray[complex, mode="c"] moments,
                     ndarray[complex, mode="c"] out=None)
 
     Apply the Lanczos kernel to the given complex Chebychev moments using the
-    given truncation limit "limit". If "limit" is smaller than 1, use the
-    length of "moments". If "out" is not None, save the results in "out"
-    instead of returning them. "param" is a free integer parameter. It is said
-    that this kernel comes close to the Jackson kernel for param=3 [1].
+    given truncation limit *limit*. If *limit* is smaller than 1, use the
+    length of *moments* instead. If *out* is not *None*, save the results in
+    *out* instead of returning them. *param* is a free integer parameter. It is
+    said that this kernel comes close to the Jackson kernel for param=3 [1].
 
     [1] Weiße et al., Rev. Mod. Phys. 78, 275 (2006)"""
     __created__ = '2012-08-14'
@@ -1089,10 +1088,10 @@ def _lanczos_complex_omp(numpy.ndarray[complex, mode="c"] moments,
                         ndarray[complex, mode="c"] out=None)
 
     Apply the Lanczos kernel to the given complex Chebychev moments using the
-    given truncation limit "limit". If "limit" is smaller than 1, use the
-    length of "moments". If "out" is not None, save the results in "out"
-    instead of returning them. "param" is a free integer parameter. It is said
-    that this kernel comes close to the Jackson kernel for param=3 [1].
+    given truncation limit *limit*. If *limit* is smaller than 1, use the
+    length of *moments* instead. If *out* is not *None*, save the results in
+    *out* instead of returning them. *param* is a free integer parameter. It is
+    said that this kernel comes close to the Jackson kernel for param=3 [1].
 
     This is the OpenMP variant of the function, using a parallel for-loop.
 

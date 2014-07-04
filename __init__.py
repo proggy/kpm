@@ -24,31 +24,35 @@
 """Implement the kernel polynomial method (KPM) [1].
 
 Right now, KPM algorithms for the following target quantities are provided:
-- density of states (DOS)
-- local density of states (LDOS)
+
+    - Density of states (DOS)
+    - Local density of states (LDOS)
 
 By averaging (arithmetic or geometric mean), also the following quantities
 can be calculated:
-- total local density of states (arithmetic mean of LDOS)
-- typical local density of states (geometric mean of LDOS)
+
+    - Arithmetic mean of the LDOS (ALDOS)
+    - Geometric mean of the LDOS (GLDOS)
 
 The algorithms expect either tight binding matrices, or supercell definitions
-as defined in the module "sc" which define the rules to create a matrix "on the
-fly".
+as defined in the module :mod:`sc` which provide rules to create a matrix "on
+the fly".
 
 Certain submodules are written in Cython [2] to obtain better performance and
 allow for OpenMP parallelization.
 
-[1] Weiße et al., Rev. Mod. Phys. 78, 275 (2006)
-[2] http://cython.org/
+References:
 
-To do:
---> implement other reconstruction methods (fct, fft, dft)
---> by choice, return cofunc objects
---> implement the "stochastical method" to compute ADOS
---> keep rescaling factors
-
+    - [1] Weiße et al., Rev. Mod. Phys. 78, 275 (2006)
+    - [2] http://cython.org/
 """
+#
+# To do:
+# --> implement other reconstruction methods (fct, fft, dft)
+# --> by choice, return cofunc objects
+# --> implement the "stochastical method" to compute ADOS
+# --> keep rescaling factors
+#
 __created__ = '2013-07-06'
 __modified__ = '2014-02-28'
 # former tb.kpm2 (developed 2012-08-06 until 2013-06-25)
@@ -174,7 +178,7 @@ def ldos_vm(mat, varmom, state=0, erange=10, enum=None, estep=None,
          kernel='jackson', rcstr_method='std', omp=False, num_threads=None,
          rescaled=False, stateclass=''):
     """Calculate local density of states (LDOS) using the given tight binding
-    matrix "mat" and the energy-dependent number of Chebychev moments "varmom".
+    matrix *mat* and the energy-dependent number of Chebychev moments *varmom*.
     Return energy and density array."""
     # 2013-07-06 until 2014-01-14
     # former tb.kpm2._ldos (developed 2012-08-25 until 2013-06-25)
@@ -221,7 +225,7 @@ def aldos(scell, erange=10, enum=None, estep=None, count=None, tol=None,
           stateclass=None, spr=1, omp=False, num_threads=0,
           until=None, verbose=False,
           init_dens=None, init_var=None, init_count=None):
-    """Calculate arithmetic mean of local density of states."""
+    """Calculate arithmetic mean of local density of states (ALDOS)."""
     # 2013-07-22 until 2013-07-24
     # based on tb.kpm2._aldos (developed 2012-09-03 until 2013-06-20)
     # based on tb.kpm._Ados (developed from 2012-04-26 until 2012-07-16) and
@@ -320,8 +324,8 @@ def gldos(scell, erange=10, enum=None, estep=None, count=None, tol=None,
           stateclass=None, spr=1, omp=False, num_threads=0,
           until=None, verbose=False,
           init_dens=None, init_var=None, init_count=None):
-    """Calculate geometric mean of local density of states (known as the
-    typical density of states)."""
+    """Calculate geometric mean of local density of states (GLDOS) (also known
+    as the typical density of states)."""
     # 2013-07-24 - 2013-07-29
     # based on tb2.kpm.aldos (developed 2013-07-22 until 2013-07-24)
     # based on tb.kpm2._aldos (developed 2012-09-03 until 2013-06-20)
@@ -430,10 +434,10 @@ def galdos(scell, erange=10, enum=None, estep=None, count=None, tol=None,
            until=None, verbose=False,
            init_adens=None, init_avar=None, init_acount=None,
            init_gdens=None, init_gvar=None, init_gcount=None):
-    """Calculate both geometric (typical average) and arithmetic mean of the
-    local density of states at the same time, using each local density twice.
-    In this way, the numerical effort is easily reduced by a factor of 2 if
-    both types of averages are needed."""
+    """Calculate both the geometric (typical average) and the arithmetic mean
+    of the local density of states (GLDOS and ALDOS) at the same time, using
+    each local density twice.  In this way, the numerical effort is easily
+    reduced by a factor of 2 if both types of averages are needed."""
     # 2013-07-24 until 2013-07-29
     # based on tb2.kpm.gldos (developed 2013-07-24 until 2013-07-24)
     # based on tb2.kpm.aldos (developed 2013-07-22 until 2013-07-24)
@@ -549,12 +553,12 @@ def galdos(scell, erange=10, enum=None, estep=None, count=None, tol=None,
 def dos(mat, rcount=None, rtol=None, rsmooth=2, limit=100, erange=10,
         enum=None, estep=None, kernel='jackson', rcstr_method='std', omp=False,
         num_threads=None, rescaled=False, until=None, verbose=False):
-    """Calculate density of states using "stochastic evaluation of traces".
+    """Calculate density of states (DOS) using "stochastic evaluation of
+    traces".
 
     Note that there is no ensemble averaging. Use the function ados to include
-    an average over different disorder configurations.
-
-    """
+    an average over different disorder configurations if a random system is
+    studied."""
     # 2014-01-14
     if (rcount and rtol) or (not rcount and not rtol):
         raise ValueError('exactly one of "rcount" or "rtol" must be given')
@@ -629,7 +633,8 @@ def ados(scell, erange=10., enum=None, estep=None, count=None, tol=None,
          kernel='jackson', rcstr_method='std', omp=False, num_threads=0,
          until=None, verbose=False,
          init_dens=None, init_var=None, init_count=None):
-    """Calculate arithmetic mean of density of states (ensemble average)."""
+    """Calculate arithmetic mean of density of states (ADOS) (ensemble
+    average)."""
     # 2014-01-13
 
     ### compare complete parameter sets? warn when continuing calculation?
@@ -711,8 +716,8 @@ def ados(scell, erange=10., enum=None, estep=None, count=None, tol=None,
 
 @Frog()
 def glcount(filename):
-    """Get the attribute "gldos.attrs.count" from the dataset "gldos" from the
-    given HDF5 file."""
+    """Get the attribute ``gldos.attrs.count`` of the dataset ``gldos`` from
+    the given HDF5 file."""
     # 2013-07-28
     try:
         return h5obj.tools.h5load(filename + '/gldos').attrs.count
@@ -722,8 +727,8 @@ def glcount(filename):
 
 @Frog()
 def alcount(filename):
-    """Get the attribute "aldos.attrs.count" from the dataset "aldos" from the
-    given HDF5 file."""
+    """Get the attribute ``aldos.attrs.count`` of the dataset ``aldos`` from
+    the given HDF5 file."""
     # 2013-07-28
     try:
         return h5obj.tools.h5load(filename + '/aldos').attrs.count
@@ -733,7 +738,7 @@ def alcount(filename):
 
 @Frog()
 def glacc(filename):
-    """Get the attribute "gldos.attrs.acc" from the dataset "gldos" from the
+    """Get the attribute ``gldos.attrs.acc`` of the dataset ``gldos`` from the
     given HDF5 file."""
     # 2013-07-28
     try:
@@ -744,7 +749,7 @@ def glacc(filename):
 
 @Frog()
 def alacc(filename):
-    """Get the attribute "aldos.attrs.acc" from the dataset "aldos" from the
+    """Get the attribute ``aldos.attrs.acc`` of the dataset ``aldos`` from the
     given HDF5 file."""
     # 2013-07-28
     try:
@@ -755,8 +760,8 @@ def alacc(filename):
 
 @Frog()
 def gllimit(filename):
-    """Get the attribute "gldos.attrs.limit" from the dataset "gldos" from the
-    given HDF5 file."""
+    """Get the attribute ``gldos.attrs.limit`` of the dataset ``gldos`` from
+    the given HDF5 file."""
     # 2014-01-07
     try:
         return h5obj.tools.h5load(filename + '/gldos').attrs.limit
@@ -766,8 +771,8 @@ def gllimit(filename):
 
 @Frog()
 def allimit(filename):
-    """Get the attribute "aldos.attrs.limit" from the dataset "aldos" from the
-    given HDF5 file."""
+    """Get the attribute ``aldos.attrs.limit`` of the dataset ``aldos`` from
+    the given HDF5 file."""
     # 2014-01-14
     try:
         return h5obj.tools.h5load(filename + '/aldos').attrs.limit
@@ -777,7 +782,7 @@ def allimit(filename):
 
 @Frog()
 def acount(filename):
-    """Get the attribute "ados.attrs.count" from the dataset "ados" from the
+    """Get the attribute ``ados.attrs.count`` of the dataset ``ados`` from the
     given HDF5 file."""
     # 2014-01-14
     try:
@@ -788,7 +793,7 @@ def acount(filename):
 
 @Frog()
 def aacc(filename):
-    """Get the attribute "ados.attrs.acc" from the dataset "ados" from the
+    """Get the attribute ``ados.attrs.acc`` of the dataset ``ados`` from the
     given HDF5 file."""
     # 2014-01-14
     try:
@@ -799,7 +804,7 @@ def aacc(filename):
 
 @Frog()
 def alimit(filename):
-    """Get the attribute "ados.attrs.limit" from the dataset "ados" from the
+    """Get the attribute ``ados.attrs.limit`` of the dataset ``ados`` from the
     given HDF5 file."""
     # 2014-01-14
     try:
@@ -810,7 +815,7 @@ def alimit(filename):
 
 @Frog()
 def lcount(filename):
-    """Get the attribute "ldos.attrs.count" from the dataset "ldos" from the
+    """Get the attribute ``ldos.attrs.count`` of the dataset ``ldos`` from the
     given HDF5 file."""
     # 2014-01-14
     try:
@@ -821,7 +826,7 @@ def lcount(filename):
 
 @Frog()
 def lacc(filename):
-    """Get the attribute "ldos.attrs.acc" from the dataset "ldos" from the
+    """Get the attribute ``ldos.attrs.acc`` of the dataset ``ldos`` from the
     given HDF5 file."""
     # 2014-01-14
     try:
@@ -832,7 +837,7 @@ def lacc(filename):
 
 @Frog()
 def llimit(filename):
-    """Get the attribute "ldos.attrs.limit" from the dataset "ldos" from the
+    """Get the attribute ``ldos.attrs.limit`` of the dataset ``ldos`` from the
     given HDF5 file."""
     # 2014-01-14
     try:
@@ -843,7 +848,7 @@ def llimit(filename):
 
 @Frog()
 def dcount(filename):
-    """Get the attribute "dos.attrs.count" from the dataset "dos" from the
+    """Get the attribute ``dos.attrs.count`` of the dataset ``dos`` from the
     given HDF5 file."""
     # 2014-01-14
     try:
@@ -854,7 +859,7 @@ def dcount(filename):
 
 @Frog()
 def dacc(filename):
-    """Get the attribute "dos.attrs.acc" from the dataset "dos" from the
+    """Get the attribute ``dos.attrs.acc`` of the dataset ``dos`` from the
     given HDF5 file."""
     # 2014-01-14
     try:
@@ -865,7 +870,7 @@ def dacc(filename):
 
 @Frog()
 def dlimit(filename):
-    """Get the attribute "dos.attrs.limit" from the dataset "dos" from the
+    """Get the attribute ``dos.attrs.limit`` of the dataset ``dos`` from the
     given HDF5 file."""
     # 2014-01-14
     try:
@@ -876,8 +881,7 @@ def dlimit(filename):
 
 @Frog()
 def glstderr0(filename):
-    """Return the standard error of the GLDOS at zero energy.
-    """
+    """Return the standard error of the GLDOS at zero energy."""
     # 2014-02-28
     try:
         gldos = h5obj.tools.h5load(filename+'/gldos')
@@ -892,8 +896,7 @@ def glstderr0(filename):
 
 @Frog()
 def alstderr0(filename):
-    """Return the standard error of the ALDOS at zero energy.
-    """
+    """Return the standard error of the ALDOS at zero energy."""
     # 2014-02-28
     try:
         aldos = h5obj.tools.h5load(filename+'/aldos')
@@ -908,8 +911,7 @@ def alstderr0(filename):
 
 @Frog()
 def astderr0(filename):
-    """Return the standard error of the ADOS at zero energy.
-    """
+    """Return the standard error of the ADOS at zero energy."""
     # 2014-02-28
     try:
         ados = h5obj.tools.h5load(filename+'/ados')
@@ -972,8 +974,7 @@ def checksigma(gldos_list, aldos_list):
 
 @Frog()
 def glval0(filename):
-    """Return the GLDOS at zero energy.
-    """
+    """Return the GLDOS at zero energy."""
     # 2014-02-28
     try:
         gldos = h5obj.tools.h5load(filename+'/gldos')
@@ -984,8 +985,7 @@ def glval0(filename):
 
 @Frog()
 def alval0(filename):
-    """Return the ALDOS at zero energy.
-    """
+    """Return the ALDOS at zero energy."""
     # 2014-02-28
     try:
         aldos = h5obj.tools.h5load(filename+'/aldos')
@@ -996,8 +996,7 @@ def alval0(filename):
 
 @Frog()
 def aval0(filename):
-    """Return the ADOS at zero energy.
-    """
+    """Return the ADOS at zero energy."""
     # 2014-02-28
     try:
         ados = h5obj.tools.h5load(filename+'/ados')

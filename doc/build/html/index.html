@@ -1,0 +1,389 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>kpm &mdash; kpm 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="kpm 0.1 documentation" href="#" />
+    <link rel="next" title="kpm.svect" href="svect.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="svect.html" title="kpm.svect"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">kpm 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="kpm">
+<h1>kpm<a class="headerlink" href="#kpm" title="Permalink to this headline">¶</a></h1>
+<p>Submodules:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="svect.html">kpm.svect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="disc.html">kpm.disc</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mom.html">kpm.mom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="kern.html">kpm.kern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rcstr.html">kpm.rcstr</a></li>
+<li class="toctree-l1"><a class="reference internal" href="resc.html">kpm.resc</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot.html">kpm.plot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cf.html">kpm.cf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html">kpm.misc</a></li>
+</ul>
+</div>
+<span class="target" id="module-kpm"></span><p>Implement the kernel polynomial method (KPM) [1].</p>
+<p>Right now, KPM algorithms for the following target quantities are provided:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Density of states (DOS)</li>
+<li>Local density of states (LDOS)</li>
+</ul>
+</div></blockquote>
+<p>By averaging (arithmetic or geometric mean), also the following quantities
+can be calculated:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Arithmetic mean of the LDOS (ALDOS)</li>
+<li>Geometric mean of the LDOS (GLDOS)</li>
+</ul>
+</div></blockquote>
+<p>The algorithms expect either tight binding matrices, or supercell definitions
+as defined in the module <tt class="xref py py-mod docutils literal"><span class="pre">sc</span></tt> which provide rules to create a matrix &#8220;on
+the fly&#8221;.</p>
+<p>Certain submodules are written in Cython [2] to obtain better performance and
+allow for OpenMP parallelization.</p>
+<p>References:</p>
+<blockquote>
+<div><ul class="simple">
+<li>[1] Weiße et al., Rev. Mod. Phys. 78, 275 (2006)</li>
+<li>[2] <a class="reference external" href="http://cython.org/">http://cython.org/</a></li>
+</ul>
+</div></blockquote>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="kpm.ldos">
+<tt class="descclassname">kpm.</tt><tt class="descname">ldos</tt><big>(</big><em>mat</em>, <em>state=0</em>, <em>limit=100</em>, <em>erange=10</em>, <em>enum=None</em>, <em>estep=None</em>, <em>kernel='jackson'</em>, <em>rcstr_method='std'</em>, <em>omp=False</em>, <em>num_threads=None</em>, <em>rescaled=False</em>, <em>stateclass=''</em><big>)</big><a class="reference internal" href="_modules/kpm.html#ldos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.ldos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate local density of states (LDOS) from the given tight binding
+matrix. Return energy and density array.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.ldos_vm">
+<tt class="descclassname">kpm.</tt><tt class="descname">ldos_vm</tt><big>(</big><em>mat</em>, <em>varmom</em>, <em>state=0</em>, <em>erange=10</em>, <em>enum=None</em>, <em>estep=None</em>, <em>kernel='jackson'</em>, <em>rcstr_method='std'</em>, <em>omp=False</em>, <em>num_threads=None</em>, <em>rescaled=False</em>, <em>stateclass=''</em><big>)</big><a class="reference internal" href="_modules/kpm.html#ldos_vm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.ldos_vm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate local density of states (LDOS) using the given tight binding
+matrix <em>mat</em> and the energy-dependent number of Chebychev moments <em>varmom</em>.
+Return energy and density array.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.aldos">
+<tt class="descclassname">kpm.</tt><tt class="descname">aldos</tt><big>(</big><em>scell</em>, <em>erange=10</em>, <em>enum=None</em>, <em>estep=None</em>, <em>count=None</em>, <em>tol=None</em>, <em>smooth=10</em>, <em>limit=100</em>, <em>kernel='jackson'</em>, <em>rcstr_method='std'</em>, <em>stateclass=None</em>, <em>spr=1</em>, <em>omp=False</em>, <em>num_threads=0</em>, <em>until=None</em>, <em>verbose=False</em>, <em>init_dens=None</em>, <em>init_var=None</em>, <em>init_count=None</em><big>)</big><a class="reference internal" href="_modules/kpm.html#aldos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.aldos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate arithmetic mean of local density of states (ALDOS).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.gldos">
+<tt class="descclassname">kpm.</tt><tt class="descname">gldos</tt><big>(</big><em>scell</em>, <em>erange=10</em>, <em>enum=None</em>, <em>estep=None</em>, <em>count=None</em>, <em>tol=None</em>, <em>smooth=10</em>, <em>limit=100</em>, <em>kernel='jackson'</em>, <em>rcstr_method='std'</em>, <em>stateclass=None</em>, <em>spr=1</em>, <em>omp=False</em>, <em>num_threads=0</em>, <em>until=None</em>, <em>verbose=False</em>, <em>init_dens=None</em>, <em>init_var=None</em>, <em>init_count=None</em><big>)</big><a class="reference internal" href="_modules/kpm.html#gldos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.gldos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate geometric mean of local density of states (GLDOS) (also known
+as the typical density of states).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.galdos">
+<tt class="descclassname">kpm.</tt><tt class="descname">galdos</tt><big>(</big><em>scell</em>, <em>erange=10</em>, <em>enum=None</em>, <em>estep=None</em>, <em>count=None</em>, <em>tol=None</em>, <em>smooth=10</em>, <em>limit=100</em>, <em>kernel='jackson'</em>, <em>rcstr_method='std'</em>, <em>stateclass=None</em>, <em>spr=1</em>, <em>omp=False</em>, <em>num_threads=0</em>, <em>until=None</em>, <em>verbose=False</em>, <em>init_adens=None</em>, <em>init_avar=None</em>, <em>init_acount=None</em>, <em>init_gdens=None</em>, <em>init_gvar=None</em>, <em>init_gcount=None</em><big>)</big><a class="reference internal" href="_modules/kpm.html#galdos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.galdos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate both the geometric (typical average) and the arithmetic mean
+of the local density of states (GLDOS and ALDOS) at the same time, using
+each local density twice.  In this way, the numerical effort is easily
+reduced by a factor of 2 if both types of averages are needed.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.dos">
+<tt class="descclassname">kpm.</tt><tt class="descname">dos</tt><big>(</big><em>mat</em>, <em>rcount=None</em>, <em>rtol=None</em>, <em>rsmooth=2</em>, <em>limit=100</em>, <em>erange=10</em>, <em>enum=None</em>, <em>estep=None</em>, <em>kernel='jackson'</em>, <em>rcstr_method='std'</em>, <em>omp=False</em>, <em>num_threads=None</em>, <em>rescaled=False</em>, <em>until=None</em>, <em>verbose=False</em><big>)</big><a class="reference internal" href="_modules/kpm.html#dos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.dos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate density of states (DOS) using &#8220;stochastic evaluation of
+traces&#8221;.</p>
+<p>Note that there is no ensemble averaging. Use the function ados to include
+an average over different disorder configurations if a random system is
+studied.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.ados">
+<tt class="descclassname">kpm.</tt><tt class="descname">ados</tt><big>(</big><em>scell</em>, <em>erange=10.0</em>, <em>enum=None</em>, <em>estep=None</em>, <em>count=None</em>, <em>tol=None</em>, <em>smooth=10</em>, <em>rcount=None</em>, <em>rtol=None</em>, <em>rsmooth=2</em>, <em>limit=100</em>, <em>kernel='jackson'</em>, <em>rcstr_method='std'</em>, <em>omp=False</em>, <em>num_threads=0</em>, <em>until=None</em>, <em>verbose=False</em>, <em>init_dens=None</em>, <em>init_var=None</em>, <em>init_count=None</em><big>)</big><a class="reference internal" href="_modules/kpm.html#ados"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.ados" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate arithmetic mean of density of states (ADOS) (ensemble
+average).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.glcount">
+<tt class="descclassname">kpm.</tt><tt class="descname">glcount</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/kpm.html#glcount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.glcount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the attribute <tt class="docutils literal"><span class="pre">gldos.attrs.count</span></tt> of the dataset <tt class="docutils literal"><span class="pre">gldos</span></tt> from
+the given HDF5 file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.alcount">
+<tt class="descclassname">kpm.</tt><tt class="descname">alcount</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/kpm.html#alcount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.alcount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the attribute <tt class="docutils literal"><span class="pre">aldos.attrs.count</span></tt> of the dataset <tt class="docutils literal"><span class="pre">aldos</span></tt> from
+the given HDF5 file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.glacc">
+<tt class="descclassname">kpm.</tt><tt class="descname">glacc</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/kpm.html#glacc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.glacc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the attribute <tt class="docutils literal"><span class="pre">gldos.attrs.acc</span></tt> of the dataset <tt class="docutils literal"><span class="pre">gldos</span></tt> from the
+given HDF5 file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.alacc">
+<tt class="descclassname">kpm.</tt><tt class="descname">alacc</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/kpm.html#alacc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.alacc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the attribute <tt class="docutils literal"><span class="pre">aldos.attrs.acc</span></tt> of the dataset <tt class="docutils literal"><span class="pre">aldos</span></tt> from the
+given HDF5 file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.gllimit">
+<tt class="descclassname">kpm.</tt><tt class="descname">gllimit</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/kpm.html#gllimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.gllimit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the attribute <tt class="docutils literal"><span class="pre">gldos.attrs.limit</span></tt> of the dataset <tt class="docutils literal"><span class="pre">gldos</span></tt> from
+the given HDF5 file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.allimit">
+<tt class="descclassname">kpm.</tt><tt class="descname">allimit</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/kpm.html#allimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.allimit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the attribute <tt class="docutils literal"><span class="pre">aldos.attrs.limit</span></tt> of the dataset <tt class="docutils literal"><span class="pre">aldos</span></tt> from
+the given HDF5 file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.acount">
+<tt class="descclassname">kpm.</tt><tt class="descname">acount</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/kpm.html#acount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.acount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the attribute <tt class="docutils literal"><span class="pre">ados.attrs.count</span></tt> of the dataset <tt class="docutils literal"><span class="pre">ados</span></tt> from the
+given HDF5 file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.aacc">
+<tt class="descclassname">kpm.</tt><tt class="descname">aacc</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/kpm.html#aacc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.aacc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the attribute <tt class="docutils literal"><span class="pre">ados.attrs.acc</span></tt> of the dataset <tt class="docutils literal"><span class="pre">ados</span></tt> from the
+given HDF5 file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.alimit">
+<tt class="descclassname">kpm.</tt><tt class="descname">alimit</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/kpm.html#alimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.alimit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the attribute <tt class="docutils literal"><span class="pre">ados.attrs.limit</span></tt> of the dataset <tt class="docutils literal"><span class="pre">ados</span></tt> from the
+given HDF5 file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.lcount">
+<tt class="descclassname">kpm.</tt><tt class="descname">lcount</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/kpm.html#lcount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.lcount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the attribute <tt class="docutils literal"><span class="pre">ldos.attrs.count</span></tt> of the dataset <tt class="docutils literal"><span class="pre">ldos</span></tt> from the
+given HDF5 file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.lacc">
+<tt class="descclassname">kpm.</tt><tt class="descname">lacc</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/kpm.html#lacc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.lacc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the attribute <tt class="docutils literal"><span class="pre">ldos.attrs.acc</span></tt> of the dataset <tt class="docutils literal"><span class="pre">ldos</span></tt> from the
+given HDF5 file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.llimit">
+<tt class="descclassname">kpm.</tt><tt class="descname">llimit</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/kpm.html#llimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.llimit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the attribute <tt class="docutils literal"><span class="pre">ldos.attrs.limit</span></tt> of the dataset <tt class="docutils literal"><span class="pre">ldos</span></tt> from the
+given HDF5 file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.dcount">
+<tt class="descclassname">kpm.</tt><tt class="descname">dcount</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/kpm.html#dcount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.dcount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the attribute <tt class="docutils literal"><span class="pre">dos.attrs.count</span></tt> of the dataset <tt class="docutils literal"><span class="pre">dos</span></tt> from the
+given HDF5 file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.dacc">
+<tt class="descclassname">kpm.</tt><tt class="descname">dacc</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/kpm.html#dacc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.dacc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the attribute <tt class="docutils literal"><span class="pre">dos.attrs.acc</span></tt> of the dataset <tt class="docutils literal"><span class="pre">dos</span></tt> from the
+given HDF5 file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.dlimit">
+<tt class="descclassname">kpm.</tt><tt class="descname">dlimit</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/kpm.html#dlimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.dlimit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the attribute <tt class="docutils literal"><span class="pre">dos.attrs.limit</span></tt> of the dataset <tt class="docutils literal"><span class="pre">dos</span></tt> from the
+given HDF5 file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.glstderr0">
+<tt class="descclassname">kpm.</tt><tt class="descname">glstderr0</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/kpm.html#glstderr0"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.glstderr0" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the standard error of the GLDOS at zero energy.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.alstderr0">
+<tt class="descclassname">kpm.</tt><tt class="descname">alstderr0</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/kpm.html#alstderr0"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.alstderr0" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the standard error of the ALDOS at zero energy.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.astderr0">
+<tt class="descclassname">kpm.</tt><tt class="descname">astderr0</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/kpm.html#astderr0"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.astderr0" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the standard error of the ADOS at zero energy.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.checksigma">
+<tt class="descclassname">kpm.</tt><tt class="descname">checksigma</tt><big>(</big><em>gldos_list</em>, <em>aldos_list</em><big>)</big><a class="reference internal" href="_modules/kpm.html#checksigma"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.checksigma" title="Permalink to this definition">¶</a></dt>
+<dd><p>Investigate the fluctuation of the standard error of the geometric mean
+among independent calculations.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.glval0">
+<tt class="descclassname">kpm.</tt><tt class="descname">glval0</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/kpm.html#glval0"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.glval0" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the GLDOS at zero energy.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.alval0">
+<tt class="descclassname">kpm.</tt><tt class="descname">alval0</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/kpm.html#alval0"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.alval0" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ALDOS at zero energy.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.aval0">
+<tt class="descclassname">kpm.</tt><tt class="descname">aval0</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/kpm.html#aval0"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm.aval0" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ADOS at zero energy.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm._get_stateclass">
+<tt class="descclassname">kpm.</tt><tt class="descname">_get_stateclass</tt><big>(</big><em>stateclass_option</em>, <em>stateclasses</em><big>)</big><a class="reference internal" href="_modules/kpm.html#_get_stateclass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm._get_stateclass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return state indices according to the selected stateclass(es).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm._get_energ">
+<tt class="descclassname">kpm.</tt><tt class="descname">_get_energ</tt><big>(</big><em>rcstr_func</em>, <em>enum</em>, <em>estep</em>, <em>params</em><big>)</big><a class="reference internal" href="_modules/kpm.html#_get_energ"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm._get_energ" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="kpm._get_rcstr_args">
+<tt class="descclassname">kpm.</tt><tt class="descname">_get_rcstr_args</tt><big>(</big><em>rcstr_func</em>, <em>energ</em>, <em>enum</em>, <em>omp</em>, <em>num_threads</em><big>)</big><a class="reference internal" href="_modules/kpm.html#_get_rcstr_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpm._get_rcstr_args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">kpm</a><ul>
+<li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="svect.html"
+                        title="next chapter">kpm.svect</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="svect.html" title="kpm.svect"
+             >next</a> |</li>
+        <li><a href="#">kpm 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Daniel Jung.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
