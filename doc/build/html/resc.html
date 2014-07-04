@@ -1,0 +1,237 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>kpm.resc &mdash; kpm 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="kpm 0.1 documentation" href="index.html" />
+    <link rel="next" title="kpm.plot" href="plot.html" />
+    <link rel="prev" title="kpm.rcstr" href="rcstr.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="plot.html" title="kpm.plot"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="rcstr.html" title="kpm.rcstr"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">kpm 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-kpm.resc">
+<span id="kpm-resc"></span><h1>kpm.resc<a class="headerlink" href="#module-kpm.resc" title="Permalink to this headline">¶</a></h1>
+<p>Rescale matrix so that its spectrum fits into the interval [-1, 1]. Also,
+rescale the results obtained by the kernel polynomial method back to the
+original spectrum.</p>
+<p>To do:
+&#8211;&gt; support other matrix formats besides CSR (e.g. dense matrices)
+&#8211;&gt; support expansions in more than one variable (multivariate functions)</p>
+<p>Background: The kernel polynomial method (KPM) [1] uses a series expansion
+technique using Chebychev polynomials. These polynomials are defined only
+on the interval [-1, 1].</p>
+<p>[1] Weiße et al., Rev. Mod. Phys. 78, 275 (2006)</p>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="kpm.resc.rescale">
+<tt class="descclassname">kpm.resc.</tt><tt class="descname">rescale</tt><big>(</big><big>)</big><a class="headerlink" href="#kpm.resc.rescale" title="Permalink to this definition">¶</a></dt>
+<dd><p>mat, (a, b) = rescale(mat, erange=None, params=None, omp=True,
+num_threads=None, eps=0., copy=True)
+a, b = rescale(mat, erange=None, params=None, omp=True,</p>
+<blockquote>
+<div>num_threads=None, eps=0., copy=False)</div></blockquote>
+<p>Rescale the given matrix in-place. Specify either an energy range &#8220;erange&#8221;
+(2-tuple) or directly the scaling parameters &#8220;params&#8221; (2-tuple). If &#8220;omp&#8221;
+is True, use parallel for-loops (OpenMP). If &#8220;num_threads&#8221; is not None, set
+the number of threads. If the number of threads is smaller than 1,
+determine and use the number of processor cores.</p>
+<p>The matrix will be rescaled in-place like mat=(mat-b)/a, if a and b are the
+two scaling parameters. Instead of the parameters itself, an energy range
+can be specified. The eigenspectrum of the matrix should fit well into the
+given energy range. The scaling parameters are then calculated via
+a=(emax-emin)/(2-eps) and b=(emax+emin)/2, where (emin, emax) is the given
+energy range. An additional small number &#8220;eps&#8221; can be specified to get sure
+that the spectrum lies well inside the chosen energy range. For the Jackson
+kernel (see the submodule &#8220;kern&#8221;), eps=pi/limit is said to be an excellent
+choice [1], where limit is the number of moments (truncation limit) of the
+Chebychev expansion.</p>
+<p>This function delegates the actual work to one of the low-level functions,
+all beginning with &#8220;_rescale_&#8221;, depending on the matrix type, data type and
+OpenMP-parallelization requirements. If no appropriate low-level function
+is found, then the plain Python implementation &#8220;_rescale&#8221; is used.</p>
+<p>[1] Weiße et al., Rev. Mod. Phys. 78, 275 (2006).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.resc.get_erange">
+<tt class="descclassname">kpm.resc.</tt><tt class="descname">get_erange</tt><big>(</big><big>)</big><a class="headerlink" href="#kpm.resc.get_erange" title="Permalink to this definition">¶</a></dt>
+<dd><p>emin, emax = get_erange(mat, extra=0.)</p>
+<p>If the (energy) spectrum of the (tight binding) matrix is completely
+unknown, this function can be used to estimate the highest and lowest
+(energy) eigenvalue by means of the Lanczos algorithm. (However, most of
+the time one should have a fairly good idea of the (energy) range already
+from the model that is used.)</p>
+<p>A small factor &#8220;extra&#8221; may be given, the returned (energy) range is
+enlarged by that factor to be sure that the whole (energy) spectrum of the
+given matrix is really contained in the returned range.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.resc.erange2params">
+<tt class="descclassname">kpm.resc.</tt><tt class="descname">erange2params</tt><big>(</big><big>)</big><a class="headerlink" href="#kpm.resc.erange2params" title="Permalink to this definition">¶</a></dt>
+<dd><p>a, b = erange2params(erange, eps=0.)</p>
+<p>Calculate the scaling parameters &#8220;a&#8221; and &#8220;b&#8221; from the given energy range
+(2-tuple), like a=(emax-emin)/(2-eps) and b=(emax+emin)/2, where (emin,
+emax) is the given energy range &#8220;erange&#8221;. An additional small number &#8220;eps&#8221;
+can be specified to make sure that the spectrum lies well inside the chosen
+energy range. For the Jackson kernel (see the submodule &#8220;kern&#8221;),
+eps=pi/limit is said to be an excellent choice [1], where limit is the
+number of moments (truncation limit) of the Chebychev expansion.</p>
+<p>[1] Weiße et al., Rev. Mod. Phys. 78, 275 (2006).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.resc.inverse_rescale">
+<tt class="descclassname">kpm.resc.</tt><tt class="descname">inverse_rescale</tt><big>(</big><big>)</big><a class="headerlink" href="#kpm.resc.inverse_rescale" title="Permalink to this definition">¶</a></dt>
+<dd><p>new_disc = inverse_rescale(disc, params)</p>
+<p>Scale the x-axis (discretization axis) of the quantity that has been
+calculated with the kernel polynomial method back to its original energy
+range. &#8220;params&#8221; is expecting a 2-tuple, containing the scaling parameters
+&#8220;a&#8221; and &#8220;b&#8221; that have been used before to rescale the matrix.</p>
+<p>The given discretization array &#8220;disc&#8221; is inversly rescaled like disc*a+b.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.resc.inverse_rescale_density">
+<tt class="descclassname">kpm.resc.</tt><tt class="descname">inverse_rescale_density</tt><big>(</big><big>)</big><a class="headerlink" href="#kpm.resc.inverse_rescale_density" title="Permalink to this definition">¶</a></dt>
+<dd><p>new_energ, new_dens = inverse_rescale_density(energ, dens, params)</p>
+<p>Special case for densities that are calculated with the kernel polynomial
+method [1], where not only the energy axis (discretization) is scaled back
+to the original energy range of the matrix spectrum, but also the density
+itself is devided by the parameter &#8220;a&#8221;, so that the density keeps
+its normalization.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kpm.resc.inverse_rescale_density_cofunc">
+<tt class="descclassname">kpm.resc.</tt><tt class="descname">inverse_rescale_density_cofunc</tt><big>(</big><big>)</big><a class="headerlink" href="#kpm.resc.inverse_rescale_density_cofunc" title="Permalink to this definition">¶</a></dt>
+<dd><p>new_cofunc = inverse_rescale_density_cofunc(cofunc, params)</p>
+<p>Same as &#8220;inverse_rescale_density&#8221;, but accepts and returns a
+cofunc.coFunc object from the cofunc-module.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">kpm.resc</a><ul>
+<li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="rcstr.html"
+                        title="previous chapter">kpm.rcstr</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="plot.html"
+                        title="next chapter">kpm.plot</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/resc.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="plot.html" title="kpm.plot"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="rcstr.html" title="kpm.rcstr"
+             >previous</a> |</li>
+        <li><a href="index.html">kpm 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Daniel Jung.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,938 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>kpm.plot &mdash; kpm 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="kpm 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="kpm" href="../kpm.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">kpm 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../kpm.html" accesskey="U">kpm</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for kpm.plot</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#</span>
+<span class="c"># Copyright notice</span>
+<span class="c"># ----------------</span>
+<span class="c">#</span>
+<span class="c"># Copyright (C) 2013-2014 Daniel Jung</span>
+<span class="c"># Contact: djungbremen@gmail.com</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify it</span>
+<span class="c"># under the terms of the GNU General Public License as published by the Free</span>
+<span class="c"># Software Foundation; either version 2 of the License, or (at your option)</span>
+<span class="c"># any later version.</span>
+<span class="c">#</span>
+<span class="c"># This program is distributed in the hope that it will be useful, but WITHOUT</span>
+<span class="c"># ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or</span>
+<span class="c"># FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for</span>
+<span class="c"># more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License along</span>
+<span class="c"># with this program; if not, write to the Free Software Foundation, Inc.,</span>
+<span class="c"># 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot;KPM-related plot functions.&quot;&quot;&quot;</span>
+<span class="n">__created__</span> <span class="o">=</span> <span class="s">&#39;2013-07-25&#39;</span>
+<span class="n">__modified__</span> <span class="o">=</span> <span class="s">&#39;2014-03-15&#39;</span>
+<span class="c"># former tb.plot (developed 2011-12-06 until 2013-07-24)</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">dummy</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">frog</span> <span class="kn">import</span> <span class="n">Frog</span><span class="p">,</span> <span class="n">items_of</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">Frog</span> <span class="o">=</span> <span class="n">dummy</span><span class="o">.</span><span class="n">Decorator</span>
+
+
+<span class="c"># common frog configuration for all frogs defined in this module</span>
+<span class="n">optdoc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="s">&#39;plot errorbars&#39;</span><span class="p">)</span>
+<span class="n">outmap</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="bp">None</span><span class="p">}</span>
+<span class="c">#shortopts = dict()</span>
+<span class="c">#longopts = dict()</span>
+<span class="c">#opttypes = dict()</span>
+
+
+<span class="nd">@Frog</span><span class="p">(</span><span class="n">inmap</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">ldos</span><span class="o">=</span><span class="s">&#39;$0/ldos&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;$0&#39;</span><span class="p">),</span> <span class="n">outmap</span><span class="o">=</span><span class="n">outmap</span><span class="p">,</span>
+      <span class="n">optdoc</span><span class="o">=</span><span class="n">optdoc</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">)</span>
+<div class="viewcode-block" id="pldos"><a class="viewcode-back" href="../../plot.html#kpm.plot.pldos">[docs]</a><span class="k">def</span> <span class="nf">pldos</span><span class="p">(</span><span class="n">ldos</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot LDOS (local density of states). Expect :class:`cofunc.coFunc`</span>
+<span class="sd">    object.&quot;&quot;&quot;</span>
+    <span class="n">yerr</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">ldos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">var</span><span class="o">/</span><span class="n">ldos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">count</span><span class="p">)</span> <span class="k">if</span> <span class="n">err</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">+</span><span class="s">&#39;/ldos&#39;</span> <span class="k">if</span> <span class="n">label</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">ldos</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">ldos</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">yerr</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;energy&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;LDOS&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">set_window_title</span><span class="p">(</span><span class="n">__name__</span><span class="o">+</span><span class="s">&#39;.pldos&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span>
+
+</div>
+<span class="nd">@Frog</span><span class="p">(</span><span class="n">inmap</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">dos</span><span class="o">=</span><span class="s">&#39;$0/dos&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;$0&#39;</span><span class="p">),</span> <span class="n">outmap</span><span class="o">=</span><span class="n">outmap</span><span class="p">,</span>
+      <span class="n">optdoc</span><span class="o">=</span><span class="n">optdoc</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">)</span>
+<div class="viewcode-block" id="pdos"><a class="viewcode-back" href="../../plot.html#kpm.plot.pdos">[docs]</a><span class="k">def</span> <span class="nf">pdos</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot DOS (density of states). Expect :class:`cofunc.coFunc` object.&quot;&quot;&quot;</span>
+    <span class="n">yerr</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">var</span><span class="o">/</span><span class="n">dos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">count</span><span class="p">)</span> <span class="k">if</span> <span class="n">err</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">+</span><span class="s">&#39;/dos&#39;</span> <span class="k">if</span> <span class="n">label</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">dos</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">dos</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">yerr</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;energy&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;DOS&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">set_window_title</span><span class="p">(</span><span class="n">__name__</span><span class="o">+</span><span class="s">&#39;.pdos&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span>
+
+</div>
+<span class="nd">@Frog</span><span class="p">(</span><span class="n">inmap</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">ados</span><span class="o">=</span><span class="s">&#39;$0/ados&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;$0&#39;</span><span class="p">),</span> <span class="n">outmap</span><span class="o">=</span><span class="n">outmap</span><span class="p">,</span>
+      <span class="n">optdoc</span><span class="o">=</span><span class="n">optdoc</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">)</span>
+<div class="viewcode-block" id="pados"><a class="viewcode-back" href="../../plot.html#kpm.plot.pados">[docs]</a><span class="k">def</span> <span class="nf">pados</span><span class="p">(</span><span class="n">ados</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot ADOS (density of states). Expect :class:`cofunc.coFunc` object.&quot;&quot;&quot;</span>
+    <span class="n">yerr</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">ados</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">var</span><span class="o">/</span><span class="n">ados</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">count</span><span class="p">)</span> <span class="k">if</span> <span class="n">err</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">+</span><span class="s">&#39;/ados&#39;</span> <span class="k">if</span> <span class="n">label</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">ados</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">ados</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">yerr</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;energy&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;ADOS&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">set_window_title</span><span class="p">(</span><span class="n">__name__</span><span class="o">+</span><span class="s">&#39;.pados&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span>
+
+</div>
+<span class="nd">@Frog</span><span class="p">(</span><span class="n">inmap</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">aldos</span><span class="o">=</span><span class="s">&#39;$0/aldos&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;$0&#39;</span><span class="p">),</span> <span class="n">outmap</span><span class="o">=</span><span class="n">outmap</span><span class="p">,</span>
+      <span class="n">optdoc</span><span class="o">=</span><span class="n">optdoc</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">())</span>
+<div class="viewcode-block" id="paldos"><a class="viewcode-back" href="../../plot.html#kpm.plot.paldos">[docs]</a><span class="k">def</span> <span class="nf">paldos</span><span class="p">(</span><span class="n">aldos</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot ALDOS (arithmetic mean of the local density of states). Expect</span>
+<span class="sd">    :class:`cofunc.coFunc` object. If *err* is *True*, calculate the standard</span>
+<span class="sd">    error (using :class:`cofunc.coFunc` attributes *var* and *count*) and plot</span>
+<span class="sd">    errorbars.&quot;&quot;&quot;</span>
+    <span class="n">yerr</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">aldos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">var</span><span class="o">/</span><span class="n">aldos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">count</span><span class="p">)</span> <span class="k">if</span> <span class="n">err</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">label</span> <span class="k">if</span> <span class="n">label</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">aldos</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">aldos</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">yerr</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;energy&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;ALDOS&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">set_window_title</span><span class="p">(</span><span class="n">__name__</span><span class="o">+</span><span class="s">&#39;.paldos&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span>
+
+</div>
+<span class="nd">@Frog</span><span class="p">(</span><span class="n">inmap</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">aldoslist</span><span class="o">=</span><span class="s">&#39;$@/aldos&#39;</span><span class="p">,</span> <span class="n">disvals</span><span class="o">=</span><span class="s">&#39;$@/param&#39;</span><span class="p">),</span> <span class="n">outmap</span><span class="o">=</span><span class="n">outmap</span><span class="p">,</span>
+      <span class="n">optdoc</span><span class="o">=</span><span class="n">optdoc</span><span class="p">,</span> <span class="n">shortopts</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="s">&#39;b&#39;</span><span class="p">),</span> <span class="n">opttypes</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">ymin</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span>
+      <span class="n">preproc</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">disvals</span><span class="o">=</span><span class="n">items_of</span><span class="p">(</span><span class="s">&#39;scale&#39;</span><span class="p">),</span>
+                   <span class="n">energs</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)]</span>
+                   <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span><span class="p">))</span>
+<div class="viewcode-block" id="paldos_energ"><a class="viewcode-back" href="../../plot.html#kpm.plot.paldos_energ">[docs]</a><span class="k">def</span> <span class="nf">paldos_energ</span><span class="p">(</span><span class="n">disvals</span><span class="p">,</span> <span class="n">aldoslist</span><span class="p">,</span> <span class="n">energs</span><span class="o">=</span><span class="p">[</span><span class="mf">0.</span><span class="p">],</span> <span class="n">err</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">fmt</span><span class="o">=</span><span class="s">&#39;.:&#39;</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;Plot ALDOS at the given energies for different disorder. If *err* is</span>
+<span class="sd">    *True*, calculate the standard error (using :class:`cofunc.coFunc`</span>
+<span class="sd">    attributes *var* and *count*) and plot errorbars (95 % confidence</span>
+<span class="sd">    intervals).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># 2014-01-09</span>
+    <span class="k">for</span> <span class="n">energ</span> <span class="ow">in</span> <span class="n">energs</span><span class="p">:</span>
+        <span class="n">aldosvals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">aldoserrs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">aldos</span> <span class="ow">in</span> <span class="n">aldoslist</span><span class="p">:</span>
+            <span class="n">aldosvals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aldos</span><span class="p">(</span><span class="n">energ</span><span class="p">))</span>
+            <span class="n">varval</span> <span class="o">=</span> <span class="n">aldos</span><span class="o">.</span><span class="n">a2cf</span><span class="p">(</span><span class="s">&#39;var&#39;</span><span class="p">)(</span><span class="n">energ</span><span class="p">)</span>
+            <span class="n">errval</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">varval</span> <span class="o">/</span> <span class="p">(</span><span class="n">aldos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">aldoserrs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">errval</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">aldoserrs</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">disvals</span><span class="p">,</span> <span class="n">aldosvals</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">aldoserrs</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span>
+                          <span class="n">label</span><span class="o">=</span><span class="s">&#39;E=</span><span class="si">%.2f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">energ</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">energs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">([</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="bp">None</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;disorder&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;ALDOS&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">set_window_title</span><span class="p">(</span><span class="n">__name__</span><span class="o">+</span><span class="s">&#39;.paldos-energ&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">ax</span>
+
+</div>
+<span class="k">def</span> <span class="nf">last</span><span class="p">():</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;energy&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;GLDOS&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">set_window_title</span><span class="p">(</span><span class="n">__name__</span><span class="o">+</span><span class="s">&#39;.pgldos&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+
+<span class="nd">@Frog</span><span class="p">(</span><span class="n">inmap</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">gldos</span><span class="o">=</span><span class="s">&#39;$0/gldos&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;$0&#39;</span><span class="p">),</span> <span class="n">outmap</span><span class="o">=</span><span class="n">outmap</span><span class="p">,</span>
+      <span class="n">optdoc</span><span class="o">=</span><span class="n">optdoc</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="n">last</span><span class="p">)</span>
+<div class="viewcode-block" id="pgldos"><a class="viewcode-back" href="../../plot.html#kpm.plot.pgldos">[docs]</a><span class="k">def</span> <span class="nf">pgldos</span><span class="p">(</span><span class="n">gldos</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot GLDOS (geometric mean of the local density of states, or typical</span>
+<span class="sd">    density of states). Expect :class:`cofunc.coFunc` object. If *err* is</span>
+<span class="sd">    *True*, calculate the standard error (using :class:`cofunc.coFunc`</span>
+<span class="sd">    attributes *var* and *count*) and plot errorbars.&quot;&quot;&quot;</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="n">color</span> <span class="ow">or</span> <span class="nb">next</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">_get_lines</span><span class="o">.</span><span class="n">color_cycle</span><span class="p">)</span>
+    <span class="n">yerr</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gldos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">var</span><span class="o">/</span><span class="n">gldos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">count</span><span class="p">)</span> <span class="k">if</span> <span class="n">err</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">label</span> <span class="k">if</span> <span class="n">label</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">gldos</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">gldos</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">yerr</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+                      <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span>
+
+</div>
+<span class="k">def</span> <span class="nf">last</span><span class="p">():</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;energy&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;ADOS and GLDOS&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">set_window_title</span><span class="p">(</span><span class="n">__name__</span><span class="o">+</span><span class="s">&#39;.pagldos&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+
+<span class="nd">@Frog</span><span class="p">(</span><span class="n">inmap</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">ados</span><span class="o">=</span><span class="s">&#39;$0/ados&#39;</span><span class="p">,</span> <span class="n">gldos</span><span class="o">=</span><span class="s">&#39;$0/gldos&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;$0&#39;</span><span class="p">),</span>
+      <span class="n">outmap</span><span class="o">=</span><span class="n">outmap</span><span class="p">,</span> <span class="n">optdoc</span><span class="o">=</span><span class="n">optdoc</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="n">last</span><span class="p">)</span>
+<div class="viewcode-block" id="pagldos"><a class="viewcode-back" href="../../plot.html#kpm.plot.pagldos">[docs]</a><span class="k">def</span> <span class="nf">pagldos</span><span class="p">(</span><span class="n">ados</span><span class="p">,</span> <span class="n">gldos</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot ADOS (average density of states) and GLDOS (geometric mean of the</span>
+<span class="sd">    local density of states). Expect two :class:`cofunc.coFunc` objects.  If</span>
+<span class="sd">    *err* is *True*, calculate the standard error (using :class:`cofunc.coFunc`</span>
+<span class="sd">    attributes *var* and *count*) and plot errorbars.&quot;&quot;&quot;</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="n">color</span> <span class="ow">or</span> <span class="nb">next</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">_get_lines</span><span class="o">.</span><span class="n">color_cycle</span><span class="p">)</span>
+    <span class="n">aerr</span> <span class="o">=</span> <span class="mf">1.96</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">ados</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">var</span><span class="o">/</span><span class="n">ados</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">count</span><span class="p">)</span> <span class="k">if</span> <span class="n">err</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">gerr</span> <span class="o">=</span> <span class="mf">1.96</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gldos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">var</span><span class="o">/</span><span class="n">gldos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">count</span><span class="p">)</span> <span class="k">if</span> <span class="n">err</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">alabel</span> <span class="o">=</span> <span class="n">label</span> <span class="o">+</span> <span class="s">&#39;/ados&#39;</span> <span class="k">if</span> <span class="n">label</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">glabel</span> <span class="o">=</span> <span class="n">label</span> <span class="o">+</span> <span class="s">&#39;/gldos&#39;</span> <span class="k">if</span> <span class="n">label</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">ados</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">ados</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">aerr</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">alabel</span><span class="p">)</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">gldos</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">gldos</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">gerr</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s">&#39;:&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+                      <span class="n">label</span><span class="o">=</span><span class="n">glabel</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span>
+
+</div>
+<span class="k">def</span> <span class="nf">last</span><span class="p">():</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;energy&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;ALDOS and GLDOS&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">set_window_title</span><span class="p">(</span><span class="n">__name__</span><span class="o">+</span><span class="s">&#39;.pgaldos&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+
+<span class="nd">@Frog</span><span class="p">(</span><span class="n">inmap</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">aldos</span><span class="o">=</span><span class="s">&#39;$0/aldos&#39;</span><span class="p">,</span> <span class="n">gldos</span><span class="o">=</span><span class="s">&#39;$0/gldos&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;$0&#39;</span><span class="p">),</span>
+      <span class="n">outmap</span><span class="o">=</span><span class="n">outmap</span><span class="p">,</span> <span class="n">optdoc</span><span class="o">=</span><span class="n">optdoc</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="n">last</span><span class="p">)</span>
+<div class="viewcode-block" id="pgaldos"><a class="viewcode-back" href="../../plot.html#kpm.plot.pgaldos">[docs]</a><span class="k">def</span> <span class="nf">pgaldos</span><span class="p">(</span><span class="n">aldos</span><span class="p">,</span> <span class="n">gldos</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot ALDOS (arithmetic mean of the local density of states) and GLDOS</span>
+<span class="sd">    (geometric mean of the local density of states). Expect two</span>
+<span class="sd">    :class:`cofunc.coFunc` objects.  If *err* is *True*, calculate the standard</span>
+<span class="sd">    error (using :class:`cofunc.coFunc` attributes *var* and *count*) and plot</span>
+<span class="sd">    errorbars.&quot;&quot;&quot;</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="n">color</span> <span class="ow">or</span> <span class="nb">next</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">_get_lines</span><span class="o">.</span><span class="n">color_cycle</span><span class="p">)</span>
+    <span class="n">aerr</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">aldos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">var</span><span class="o">/</span><span class="n">aldos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">count</span><span class="p">)</span> <span class="k">if</span> <span class="n">err</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">gerr</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gldos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">var</span><span class="o">/</span><span class="n">gldos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">count</span><span class="p">)</span> <span class="k">if</span> <span class="n">err</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">alabel</span> <span class="o">=</span> <span class="n">label</span> <span class="o">+</span> <span class="s">&#39;/aldos&#39;</span> <span class="k">if</span> <span class="n">label</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">glabel</span> <span class="o">=</span> <span class="n">label</span> <span class="o">+</span> <span class="s">&#39;/gldos&#39;</span> <span class="k">if</span> <span class="n">label</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">aldos</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">aldos</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">aerr</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+                 <span class="n">label</span><span class="o">=</span><span class="n">alabel</span><span class="p">)</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">gldos</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">gldos</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">gerr</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s">&#39;:&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+                      <span class="n">label</span><span class="o">=</span><span class="n">glabel</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span>
+
+</div>
+<span class="k">def</span> <span class="nf">last</span><span class="p">():</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;$\Gamma$&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;count&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Histogram&#39;</span><span class="p">)</span>
+    <span class="c">#plt.legend()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">set_window_title</span><span class="p">(</span><span class="n">__name__</span><span class="o">+</span><span class="s">&#39;.pchecksigma&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+
+<span class="nd">@Frog</span><span class="p">(</span><span class="n">inmap</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">gldos_list</span><span class="o">=</span><span class="s">&#39;$@/gldos&#39;</span><span class="p">,</span> <span class="n">aldos_list</span><span class="o">=</span><span class="s">&#39;$@/aldos&#39;</span><span class="p">),</span> <span class="n">outmap</span><span class="o">=</span><span class="n">outmap</span><span class="p">,</span>
+      <span class="n">optdoc</span><span class="o">=</span><span class="n">optdoc</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="n">last</span><span class="p">)</span>
+<div class="viewcode-block" id="pchecksigma"><a class="viewcode-back" href="../../plot.html#kpm.plot.pchecksigma">[docs]</a><span class="k">def</span> <span class="nf">pchecksigma</span><span class="p">(</span><span class="n">gldos_list</span><span class="p">,</span> <span class="n">aldos_list</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Investigate the fluctuation of the standard error of the geometric mean</span>
+<span class="sd">    among independent calculations in form of a histogram.&quot;&quot;&quot;</span>
+    <span class="c"># 2014-02-28</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="n">color</span> <span class="ow">or</span> <span class="nb">next</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">_get_lines</span><span class="o">.</span><span class="n">color_cycle</span><span class="p">)</span>
+    <span class="n">gvals</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">avals</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">gstderrs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">astderrs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">gammavals</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">gammastds</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">gammastds2</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">gammastds3</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">print</span>
+    <span class="k">print</span> <span class="s">&#39;GLDOS                 ALDOS                 Gamma&#39;</span>
+    <span class="k">for</span> <span class="n">gldos</span><span class="p">,</span> <span class="n">aldos</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">gldos_list</span><span class="p">,</span> <span class="n">aldos_list</span><span class="p">):</span>
+        <span class="n">gldos0val</span> <span class="o">=</span> <span class="n">gldos</span><span class="p">(</span><span class="mf">0.</span><span class="p">)</span>
+        <span class="n">aldos0val</span> <span class="o">=</span> <span class="n">aldos</span><span class="p">(</span><span class="mf">0.</span><span class="p">)</span>
+        <span class="n">gvar</span> <span class="o">=</span> <span class="n">gldos</span><span class="o">.</span><span class="n">a2cf</span><span class="p">(</span><span class="s">&#39;var&#39;</span><span class="p">)</span>
+        <span class="n">avar</span> <span class="o">=</span> <span class="n">aldos</span><span class="o">.</span><span class="n">a2cf</span><span class="p">(</span><span class="s">&#39;var&#39;</span><span class="p">)</span>
+        <span class="n">gldos0var</span> <span class="o">=</span> <span class="n">gvar</span><span class="p">(</span><span class="mf">0.</span><span class="p">)</span>
+        <span class="n">aldos0var</span> <span class="o">=</span> <span class="n">avar</span><span class="p">(</span><span class="mf">0.</span><span class="p">)</span>
+        <span class="n">gcount</span> <span class="o">=</span> <span class="n">gldos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">count</span>
+        <span class="n">acount</span> <span class="o">=</span> <span class="n">aldos</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">count</span>
+        <span class="n">gldos0stderr</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gldos0var</span><span class="o">/</span><span class="p">(</span><span class="n">gcount</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">aldos0stderr</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">aldos0var</span><span class="o">/</span><span class="p">(</span><span class="n">acount</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">gvals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gldos0val</span><span class="p">)</span>
+        <span class="n">avals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aldos0val</span><span class="p">)</span>
+        <span class="n">gstderrs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gldos0stderr</span><span class="p">)</span>
+        <span class="n">astderrs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aldos0stderr</span><span class="p">)</span>
+
+        <span class="c"># calculate gamma</span>
+        <span class="n">gamma0val</span> <span class="o">=</span> <span class="n">gldos0val</span> <span class="o">/</span> <span class="n">aldos0val</span>
+        <span class="n">gamma0std</span> <span class="o">=</span> <span class="n">gldos0stderr</span><span class="o">/</span><span class="nb">abs</span><span class="p">(</span><span class="n">aldos0val</span><span class="p">)</span> \
+            <span class="o">+</span> <span class="n">aldos0stderr</span><span class="o">*</span><span class="nb">abs</span><span class="p">(</span><span class="n">gldos0val</span><span class="o">/</span><span class="n">aldos0val</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="c">#gamma0var = gamma0std**2</span>
+        <span class="n">gammavals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gamma0val</span><span class="p">)</span>
+        <span class="n">gammastds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gamma0std</span><span class="p">)</span>
+
+        <span class="c"># propagate the standard deviation another way</span>
+        <span class="n">gamma0std2</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gldos0stderr</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">aldos0val</span><span class="o">**</span><span class="mi">2</span>
+            <span class="o">+</span> <span class="n">aldos0stderr</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">gldos0val</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">aldos0val</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">gammastds2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gamma0std2</span><span class="p">)</span>
+
+        <span class="c"># yet another way, assuming the correlation coefficient between GLDOS</span>
+        <span class="c"># and ALDOS is zero</span>
+        <span class="n">gamma0std3</span> <span class="o">=</span> <span class="n">gamma0val</span><span class="o">*</span><span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gldos0stderr</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">gldos0val</span><span class="o">**</span><span class="mi">2</span>
+            <span class="o">+</span> <span class="n">aldos0stderr</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">aldos0val</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">gammastds3</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gamma0std3</span><span class="p">)</span>
+
+        <span class="k">print</span> <span class="s">&#39;</span><span class="si">%.7f</span><span class="s">+-</span><span class="si">%.7f</span><span class="s">  </span><span class="si">%.7f</span><span class="s">+-</span><span class="si">%.7f</span><span class="s">  </span><span class="si">%.7f</span><span class="s">+-</span><span class="si">%.7f</span><span class="s">  +-</span><span class="si">%.7f</span><span class="s">  +-</span><span class="si">%.7f</span><span class="s">&#39;</span> \
+            <span class="o">%</span> <span class="p">(</span><span class="n">gldos0val</span><span class="p">,</span> <span class="n">gldos0stderr</span><span class="p">,</span> <span class="n">aldos0val</span><span class="p">,</span> <span class="n">aldos0stderr</span><span class="p">,</span>
+               <span class="n">gamma0val</span><span class="p">,</span> <span class="n">gamma0std</span><span class="p">,</span> <span class="n">gamma0std2</span><span class="p">,</span> <span class="n">gamma0std3</span><span class="p">)</span>
+
+    <span class="c"># compare with standard deviation</span>
+    <span class="n">gst</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">gvals</span><span class="p">)</span>
+    <span class="n">ast</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">avals</span><span class="p">)</span>
+    <span class="n">gammast</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">gammavals</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;STD: </span><span class="si">%.7f</span><span class="s">             </span><span class="si">%.7f</span><span class="s">             </span><span class="si">%.7f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">gst</span><span class="p">,</span> <span class="n">ast</span><span class="p">,</span> <span class="n">gammast</span><span class="p">)</span>
+
+    <span class="c"># plot histogram</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">gammavals</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span>
+
+
+<span class="c">#class _pgldos_fss(hdp2.plot.PlotHDP):</span>
+  <span class="c">#&quot;&quot;&quot;Plot GLDOS data in dependence of system size for specific energies.</span>
+
+  <span class="c">#To do:</span>
+  <span class="c">#--&gt; select x-data (total system size N or longitudinal system length L)</span>
+  <span class="c">#--&gt; offer curve fitting</span>
+  <span class="c">#--&gt; semi-logarithmic plot</span>
+  <span class="c">#--&gt; select y-data (instead of GLDOS)&quot;&quot;&quot;</span>
+  <span class="c">#__created__ = &#39;2012-11-13&#39;</span>
+  <span class="c">#__modified__ = &#39;2013-02-18&#39;</span>
+  <span class="c">#__autoinst__ = True</span>
+  <span class="c">#innames = [&#39;gldos&#39;]</span>
+
+  <span class="c">#def options(self):</span>
+    <span class="c">#self.add_option(&#39;-b&#39;, &#39;--bars&#39;, default=False, action=&#39;store_true&#39;,</span>
+                    <span class="c">#help=&#39;show errorbars (if confidence intervals exist &#39;+\</span>
+                         <span class="c">#&#39;among the attributes of the datasets)&#39;)</span>
+    <span class="c">#self.add_option(&#39;-e&#39;, &#39;--energ&#39;, default=&#39;0&#39;,</span>
+                    <span class="c">#help=&#39;set energies&#39;)</span>
+    <span class="c">#self.add_option(&#39;-l&#39;, &#39;--log&#39;, default=False, action=&#39;store_true&#39;,</span>
+                    <span class="c">#help=&#39;use logarithmic scaling on the y-axis&#39;)</span>
+    <span class="c">#self.add_option(&#39;-y&#39;, &#39;--ydata&#39;, default=&#39;gldos&#39;, help=&#39;select y-data&#39;)</span>
+    <span class="c">#self.add_option(&#39;-f&#39;, &#39;--fit&#39;, default=False, action=&#39;store_true&#39;,</span>
+                    <span class="c">#help=&#39;do curve fitting on the data&#39;)</span>
+    <span class="c">#self.add_option(&#39;-m&#39;, &#39;--model&#39;, default=&#39;a/x**p&#39;,</span>
+                    <span class="c">#help=&#39;set model function to fit the GLDOS data&#39;)</span>
+    <span class="c">#self.add_option(&#39;-g&#39;, &#39;--guess&#39;, default=None,</span>
+                    <span class="c">#help=&#39;set initial guess for the model parameters&#39;)</span>
+    <span class="c">#self.add_option(&#39;-i&#39;, &#39;--import&#39;, dest=&#39;imp&#39;, default=None,</span>
+                    <span class="c">#help=&#39;import modules used in the model definition&#39;)</span>
+    <span class="c">#self.add_option(&#39;-x&#39;, &#39;--xdata&#39;, dest=&#39;mode&#39;, default=&#39;L&#39;,</span>
+                    <span class="c">#help=&#39;set x-data&#39;)</span>
+    <span class="c">#self.add_option(&#39;-a&#39;, &#39;--acc&#39;, default=None, type=str,</span>
+                    <span class="c">#help=&#39;set minimum accuracy or minimum sample count. &#39;+\</span>
+                         <span class="c">#&#39;Filter out input files that do not meet this &#39;+\</span>
+                         <span class="c">#&#39;requirement&#39;)</span>
+
+  <span class="c">#def prepare(self):</span>
+    <span class="c">## choose fit model</span>
+    <span class="c">#self.model = fit2.Model(self.opts.model, guess=self.opts.guess,</span>
+                            <span class="c">#modules=self.opts.imp)</span>
+
+  <span class="c">#def main(self):</span>
+    <span class="c">#if len(self.infiles) == 0:</span>
+      <span class="c">#return</span>
+
+    <span class="c">## get energies</span>
+    <span class="c">#energs = [float(e) for e in self.opts.energ.split(&#39;,&#39;)]</span>
+    <span class="c">#energs.sort()</span>
+    <span class="c">#self.colors(len(energs)) # each=1+self.opts.fit</span>
+
+    <span class="c">## sort input files by system size</span>
+    <span class="c">#self.infiles.sort(key=lambda f: scipy.prod(f.__param__[&#39;shape&#39;]))</span>
+
+    <span class="c">## collect system sizes</span>
+    <span class="c">#sizes = [scipy.mean(f.__param__[&#39;shape&#39;]) for f in self.infiles]</span>
+
+    <span class="c">## choose x-data</span>
+    <span class="c">#Lmode = self.opts.mode == &#39;L&#39; \</span>
+            <span class="c">#or &#39;length&#39;.startswith(self.opts.mode.lower())</span>
+    <span class="c">#Nmode = self.opts.mode == &#39;N&#39; \</span>
+            <span class="c">#or &#39;size&#39;.startswith(self.opts.mode.lower())</span>
+
+    <span class="c">## filter files by accuracy</span>
+    <span class="c">#if self.opts.acc:</span>
+      <span class="c">#num, acc, digits = tb.misc.get_num_or_acc(self.opts.acc)</span>
+    <span class="c">#inputfiles = []</span>
+    <span class="c">#for f in self.infiles:</span>
+      <span class="c">#if not &#39;gldos&#39; in f:</span>
+        <span class="c">#continue</span>
+      <span class="c">#if self.opts.acc:</span>
+        <span class="c">#if num:</span>
+          <span class="c">#if f.gldos.attrs.get(&#39;count&#39;, 0) &gt;= num:</span>
+            <span class="c">#inputfiles.append(f)</span>
+        <span class="c">#elif acc:</span>
+          <span class="c">#if f.gldos.attrs.get(&#39;acc&#39;, 1) &lt;= acc:</span>
+            <span class="c">#inputfiles.append(f)</span>
+        <span class="c">#else:</span>
+          <span class="c">#inputfiles.append(f)</span>
+      <span class="c">#else:</span>
+        <span class="c">#inputfiles.append(f)</span>
+    <span class="c">#inputfiles.sort(key=lambda f: f.filename)</span>
+
+    <span class="c">## select data</span>
+    <span class="c">#if Lmode:</span>
+      <span class="c">#x = [f.__param__[&#39;shape&#39;][0] for f in inputfiles]</span>
+    <span class="c">#elif Nmode:</span>
+      <span class="c">#x = [scipy.prod(f.__param__[&#39;shape&#39;]) for f in inputfiles]</span>
+    <span class="c">#else:</span>
+      <span class="c">#self.op.error(&#39;unknown x-data: %s&#39; % self.opts.mode)</span>
+
+    <span class="c">#if self.opts.fit:</span>
+      <span class="c">## apply FSS on every energy interval</span>
+      <span class="c">#parsets = []</span>
+      <span class="c">#parstds = []</span>
+      <span class="c">#for eind, evalue in enumerate(energs):</span>
+        <span class="c">## make fit</span>
+        <span class="c">#y = [f.gldos(evalue, bounds_error=False, fill_value=0.) \</span>
+              <span class="c">#for f in inputfiles]</span>
+        <span class="c">#popt, pcov = self.model.apply(x, y)</span>
+        <span class="c">#parsets.append(popt)</span>
+        <span class="c">#parstds.append(list(scipy.sqrt(pcov.diagonal())))</span>
+
+    <span class="c">## cycle energies, plot data points</span>
+    <span class="c">#for evalue in energs:</span>
+      <span class="c">## collect GLDOS values (and confidence intervals) at this energy</span>
+      <span class="c">#denses = []</span>
+      <span class="c">#cis = ([], [])</span>
+      <span class="c">#for infile in inputfiles:</span>
+        <span class="c">#if self.opts.ydata in infile:</span>
+          <span class="c">#denses.append(infile[self.opts.ydata](evalue, bounds_error=False))</span>
+          <span class="c">#if &#39;ci&#39; in infile[self.opts.ydata].attrs:</span>
+            <span class="c">#lower, upper = infile[self.opts.ydata].a2cf(&#39;ci&#39;)</span>
+            <span class="c">#cis[0].append(lower(evalue))</span>
+            <span class="c">#cis[1].append(upper(evalue))</span>
+          <span class="c">#else:</span>
+            <span class="c">#cis[0].append(scipy.nan)</span>
+            <span class="c">#cis[1].append(scipy.nan)</span>
+        <span class="c">#else:</span>
+          <span class="c">#denses.append(scipy.nan)</span>
+
+      <span class="c">## plot</span>
+      <span class="c">#label = &#39;E=%.2g&#39; % evalue</span>
+      <span class="c">#pyplot.errorbar(sizes, denses, fmt=&#39;.&#39; if self.opts.fit else &#39;.--&#39;,</span>
+                     <span class="c">#label=label, yerr=cis if self.opts.bars else None)</span>
+
+    <span class="c">## cycle energies again, plot fitting curves</span>
+    <span class="c">#if self.opts.fit:</span>
+      <span class="c">## adjust view</span>
+      <span class="c">#axis = list(pyplot.axis()) # remember current view</span>
+      <span class="c">#if self.opts.axis[0] is not None and self.opts.axis[0] &lt; axis[0]:</span>
+        <span class="c">#axis[0] = self.opts.axis[0]</span>
+      <span class="c">#if self.opts.axis[1] is not None and self.opts.axis[1] &gt; axis[1]:</span>
+        <span class="c">#axis[1] = self.opts.axis[1]</span>
+      <span class="c">#if self.opts.axis[2] is not None and self.opts.axis[2] &lt; axis[2]:</span>
+        <span class="c">#axis[2] = self.opts.axis[2]</span>
+      <span class="c">#if self.opts.axis[3] is not None and self.opts.axis[3] &gt; axis[3]:</span>
+        <span class="c">#axis[3] = self.opts.axis[3]</span>
+      <span class="c">#self.opts.axis = axis</span>
+
+      <span class="c">#for eind, evalue in enumerate(energs):</span>
+        <span class="c">#parset = parsets[eind]</span>
+        <span class="c">#parstd = parstds[eind]</span>
+        <span class="c">#x = scipy.linspace(axis[0], axis[1], 200)</span>
+        <span class="c">#y = []</span>
+        <span class="c">#for xv in x:</span>
+          <span class="c">#parset_with_x = [xv,]+list(parset)</span>
+          <span class="c">#y.append(self.model.func(*parset_with_x))</span>
+        <span class="c">#if self.opts.fit:</span>
+          <span class="c">#pairs = []</span>
+          <span class="c">#for parname, parvalue, std in zip(self.model.parnames, parset,</span>
+                                            <span class="c">#parstd):</span>
+            <span class="c">#pairs.append(&#39;%s=%.2g$\pm$%.2g&#39; % (parname, parvalue, std))</span>
+          <span class="c">#label = &#39;, &#39;.join(pairs) % parsets[eind]</span>
+          <span class="c">#pyplot.plot(x, y, label=label)</span>
+
+    <span class="c">## show legend if number of energies is larger than one or fitting curve</span>
+    <span class="c">## is shown</span>
+    <span class="c">#if not self.opts.legend and not self.opts.nolegend:</span>
+      <span class="c">#if len(energs) &gt; 1 or self.opts.fit:</span>
+        <span class="c">#self.opts.legend = True</span>
+      <span class="c">#else:</span>
+        <span class="c">#self.opts.nolegend = True</span>
+
+    <span class="c">## propose some figure properties</span>
+    <span class="c">#if Nmode:</span>
+      <span class="c">#xlabel = &#39;N&#39;</span>
+    <span class="c">#elif Lmode:</span>
+      <span class="c">#xlabel = &#39;L&#39;</span>
+    <span class="c">#else:</span>
+      <span class="c">#xlabel = &#39;system size&#39;</span>
+    <span class="c">#self.propose(xlabel=xlabel, title=&#39;pgldos-fss&#39;,</span>
+                 <span class="c">#ylabel=self.opts.ydata.upper())</span>
+
+
+<span class="c">##class _Pgdos(hdp.PlotHDP):</span>
+  <span class="c">##&quot;&quot;&quot;Plot the typical (geometrically averaged) density of states (GDOS).&quot;&quot;&quot;</span>
+  <span class="c">##__created__ = &#39;2012-03-18&#39;</span>
+  <span class="c">##__modified__ = &#39;2012-07-19&#39;</span>
+  <span class="c">### former tb._Pgdos from 2011-06-09</span>
+
+  <span class="c">##def __init__(self):</span>
+    <span class="c">##hdp.PlotHDP.__init__(self)</span>
+
+    <span class="c">### set options</span>
+    <span class="c">##self.op.add_option(&#39;-m&#39;, &#39;--mode&#39;,  dest=&#39;mode&#39;,  default=&#39;E&#39;,</span>
+                       <span class="c">##help=&#39;set mode (which quantity should be shown on &#39; +</span>
+                            <span class="c">##&#39;the x-axis?)&#39;)</span>
+    <span class="c">##self.op.add_option(&#39;-a&#39;, &#39;--ados&#39;,  dest=&#39;ados&#39;,  default=False,</span>
+                       <span class="c">##action=&#39;store_true&#39;,</span>
+                       <span class="c">##help=&#39;plot total density of states (ADOS) of the &#39; +</span>
+                            <span class="c">##&#39;largest given system (in energy mode)&#39;)</span>
+    <span class="c">##self.op.add_option(&#39;-c&#39;, &#39;--curve&#39;, dest=&#39;curve&#39;, default=&#39;&#39;,</span>
+                       <span class="c">##help=&#39;do curve fitting, specify fit model&#39;)</span>
+    <span class="c">##self.op.add_option(&#39;-e&#39;, &#39;--energ&#39;, dest=&#39;energ&#39;, default=&#39;&#39;,</span>
+                       <span class="c">##help=&#39;set energy (in all but energy mode). &#39; +</span>
+                            <span class="c">##&#39;Multiple comma-separated values may be given&#39;)</span>
+    <span class="c">##self.op.add_option(&#39;-p&#39;, &#39;--param&#39;, dest=&#39;param&#39;, default=False,</span>
+                       <span class="c">##action=&#39;store_true&#39;,</span>
+                       <span class="c">##help=&#39;show resulting parameters of curve fitting &#39; +</span>
+                            <span class="c">##&#39;in legend&#39;)</span>
+
+  <span class="c">##def __call__(self, *args, **kwargs):</span>
+    <span class="c">##import matplotlib.pyplot as plt</span>
+    <span class="c">##import scipy.interpolate as ip</span>
+    <span class="c">##from tb.misc import opt2list</span>
+    <span class="c">##from itertools import izip</span>
+    <span class="c">##from fit import Model</span>
+    <span class="c">##import numpy as np</span>
+    <span class="c">##hdp.PlotHDP.__call__(self, *args, **kwargs)</span>
+
+    <span class="c">### load data</span>
+    <span class="c">##self.load(&#39;gdos_energ&#39;, &#39;gdos_dens&#39;)</span>
+
+    <span class="c">### define mode conditions</span>
+    <span class="c">##Emode = self.opts.mode == &#39;E&#39; \</span>
+            <span class="c">##or &#39;energy&#39;.startswith(self.opts.mode.lower())</span>
+    <span class="c">##Lmode = self.opts.mode == &#39;L&#39; \</span>
+            <span class="c">##or &#39;length&#39;.startswith(self.opts.mode.lower())</span>
+    <span class="c">##Nmode = self.opts.mode == &#39;N&#39; \</span>
+            <span class="c">##or &#39;size&#39;.startswith(self.opts.mode.lower())</span>
+    <span class="c">##Wmode = self.opts.mode == &#39;W&#39; \</span>
+            <span class="c">##or &#39;disorder&#39;.startswith(self.opts.mode.lower())</span>
+
+    <span class="c">### check options</span>
+    <span class="c">##assert not self.opts.ados or Emode, &#39;ADOS only available in energy mode&#39;</span>
+    <span class="c">##assert not self.opts.energ or not Emode, \</span>
+           <span class="c">##&#39;energy can only be set if not in energy mode&#39;</span>
+    <span class="c">##assert not self.opts.curve or not Emode, \</span>
+           <span class="c">##&#39;curve fitting only available if not in energy mode&#39;</span>
+    <span class="c">##assert not self.opts.param or self.opts.curve, \</span>
+           <span class="c">##&#39;can only show parameters of curve fitting if curve fitting is &#39;+\</span>
+           <span class="c">##&#39;actually used&#39;</span>
+    <span class="c">##self.opts.energ = opt2list(self.opts.energ, dtype=float)</span>
+
+    <span class="c">### check that ratio of truncation limit and system size is about equal in</span>
+    <span class="c">### all input files</span>
+    <span class="c">##self.checkratio()</span>
+
+    <span class="c">### define and select fitting model functions</span>
+    <span class="c">##if self.opts.curve:</span>
+      <span class="c">##if self.opts.curve.startswith(&#39;p&#39;):</span>
+        <span class="c">##power = float(self.opts.curve[1:])</span>
+        <span class="c">##model = Model(lambda x, p: p[0]/x**power+p[1],</span>
+                      <span class="c">##strrep=&#39;f(x) = %.2f/x^p + %.2f&#39;, est=(1., -1.),</span>
+                      <span class="c">##paramstr=&#39;a=%.2f  b=%.3f&#39;) # shifted inverse</span>
+      <span class="c">##elif self.opts.curve == &#39;3&#39;:</span>
+        <span class="c">##model = Model(lambda x, p: p[0]/x**p[1]+p[2],</span>
+                      <span class="c">##strrep=&#39;f(x) = %.2f/x^%.2f + %.2f&#39;, est=(1., 1.5, -1.),</span>
+                      <span class="c">##paramstr=&#39;a=%.2f  p=%.2f  b=%.3f&#39;)</span>
+      <span class="c">##elif self.opts.curve == &#39;2&#39;:</span>
+        <span class="c">##model = Model(lambda x, p: p[0]/x**p[1], strrep=&#39;f(x) = %.2f/x^%.2f&#39;,</span>
+                      <span class="c">##est=(1., 1.5), paramstr=&#39;a=%.2f  p=%.2f&#39;)</span>
+
+    <span class="c">### choose mode</span>
+    <span class="c">##if Emode:</span>
+      <span class="c">### simply show GDOS versus energy of each file, sort filenames</span>
+      <span class="c">###for d, p, f in izip(self.din, self.pin, self.fin):</span>
+      <span class="c">##for index in np.argsort(self.fin):</span>
+        <span class="c">##d = self.din[index]</span>
+        <span class="c">##p = self.pin[index]</span>
+        <span class="c">##f = self.fin[index]</span>
+        <span class="c">##plt.plot(d.gdos_energ, d.gdos_dens,</span>
+                 <span class="c">##label=self.nicelabel(p, default=f))</span>
+
+      <span class="c">### plot ADOS</span>
+      <span class="c">##if self.opts.ados:</span>
+        <span class="c">##msind = np.argmax([np.prod(p.shape) for p in self.pin])</span>
+        <span class="c">##ados_energ, ados_dens = hdp.dat(self.fin[msind],</span>
+                                        <span class="c">##name=&#39;ados_energ,ados_dens&#39;)</span>
+        <span class="c">##plt.plot(ados_energ, ados_dens, &#39;k--&#39;, label=&#39;ADOS&#39;)</span>
+                    <span class="c">#self.nicelabel(p, default=f)+&#39; (ADOS)&#39;</span>
+
+      <span class="c">### propose x-axis label</span>
+      <span class="c">##if &#39;hop&#39; in self.pin[0]:  # in case of tight binding models with</span>
+                                  <span class="c"># hopping t</span>
+        <span class="c">##self.propose(xlabel=r&#39;$E/t$&#39;)</span>
+      <span class="c">##elif &#39;coup&#39; in self.pin[0]:  # in case of Heisenberg model with</span>
+                                     <span class="c"># coupling J</span>
+        <span class="c">##self.propose(xlabel=r&#39;$E/J_0$&#39;)</span>
+      <span class="c">##else:</span>
+        <span class="c">##self.propose(xlabel=r&#39;$E$&#39;)</span>
+
+    <span class="c">##elif Lmode:</span>
+      <span class="c">### show system edge-length dependence</span>
+
+      <span class="c">### categorize input data files</span>
+      <span class="c">##psets, inds = self.catinfiles(&#39;shape&#39;)</span>
+
+      <span class="c">### create interpolation function objects</span>
+      <span class="c">##interps = []</span>
+      <span class="c">##for d in self.din:</span>
+        <span class="c">##interps.append(ip.interp1d(d.gdos_energ, d.gdos_dens,</span>
+                                     <span class="c">#bounds_error=False, fill_value=0.))</span>
+
+      <span class="c">### set number of colors</span>
+      <span class="c">##self.colors(len(self.opts.energ)*len(psets))</span>
+
+      <span class="c">### plot GDOS data</span>
+      <span class="c">##for pset, ind in zip(psets, inds):</span>
+        <span class="c">##pins = self.pin[ind]</span>
+        <span class="c">##interp = [interps[i] for i in ind]</span>
+        <span class="c">##for e in self.opts.energ:</span>
+          <span class="c">##d = [intp(e) for intp in interp]</span>
+          <span class="c">##x = [p.shape[0] for p in pins]</span>
+          <span class="c">##plt.plot(x, d, &#39;d&#39;, label=&#39;%s E/t=%.2f&#39;</span>
+                                <span class="c">#% (self.nicelabel(pset), e))</span>
+
+      <span class="c">### curve fitting</span>
+      <span class="c">##if self.opts.curve:</span>
+        <span class="c">### cycle categories (parameter combinations)</span>
+        <span class="c">##for pset, ind in zip(psets, inds):</span>
+          <span class="c">##pins = self.pin[ind]</span>
+          <span class="c">##interp = [interps[i] for i in ind]</span>
+          <span class="c">##for e in self.opts.energ:</span>
+            <span class="c">### Make fit using least squares algorithm</span>
+            <span class="c">##d = [intp(e) for intp in interp]</span>
+            <span class="c">##x = [p.shape[0] for p in pins]</span>
+            <span class="c">##model.leastsq(x, d)</span>
+
+            <span class="c">### Plot fit curve</span>
+            <span class="c">##if self.opts.param:</span>
+              <span class="c">##label = model.paramstr()</span>
+            <span class="c">##else:</span>
+              <span class="c">##label = None</span>
+            <span class="c">##model.plot(fmt=&#39;--&#39;, xmin=self.opts.axis[0],</span>
+                            <span class="c">#xmax=self.opts.axis[1], label=label)</span>
+
+        <span class="c">### propose x-axis title</span>
+        <span class="c">##self.propose(xlabel=&#39;L&#39;)</span>
+
+    <span class="c">##elif Nmode:</span>
+      <span class="c">### show system size dependence</span>
+
+      <span class="c">### categorize input data files</span>
+      <span class="c">##psets, inds = self.catinfiles(&#39;shape&#39;)</span>
+
+      <span class="c">### create interpolation function objects</span>
+      <span class="c">##interps = []</span>
+      <span class="c">##for d in self.din:</span>
+        <span class="c">##interps.append(ip.interp1d(d.gdos_energ, d.gdos_dens,</span>
+                            <span class="c">#bounds_error=False, fill_value=0.))</span>
+
+      <span class="c">### set number of colors</span>
+      <span class="c">##self.colors(len(self.opts.energ)*len(psets))</span>
+
+      <span class="c">### plot GDOS data</span>
+      <span class="c">##for pset, ind in zip(psets, inds):</span>
+        <span class="c">##pins = self.pin[ind]</span>
+        <span class="c">##interp = [interps[i] for i in ind]</span>
+        <span class="c">##for e in self.opts.energ:</span>
+          <span class="c">##d = [intp(e) for intp in interp]</span>
+          <span class="c">##x = [np.prod(p.shape) for p in pins]</span>
+          <span class="c">##plt.plot(x, d, &#39;d&#39;, label=&#39;%s E/t=%.2f&#39;</span>
+                            <span class="c">#% (self.nicelabel(pset), e))</span>
+
+      <span class="c">### curve fitting</span>
+      <span class="c">##if self.opts.curve:</span>
+        <span class="c">### cycle categories (parameter combinations)</span>
+        <span class="c">##for pset, ind in zip(psets, inds):</span>
+          <span class="c">##pins = self.pin[ind]</span>
+          <span class="c">##interp = [interps[i] for i in ind]</span>
+          <span class="c">##for e in self.opts.energ:</span>
+            <span class="c">### make fit using least squares algorithm</span>
+            <span class="c">##d = [intp(e) for intp in interp]</span>
+            <span class="c">##x = [np.prod(p.shape) for p in pins]</span>
+            <span class="c">##model.leastsq(x, d)</span>
+
+            <span class="c">### plot fit curve</span>
+            <span class="c">##if self.opts.param:</span>
+              <span class="c">##label = model.paramstr()</span>
+            <span class="c">##else:</span>
+              <span class="c">##label = None</span>
+            <span class="c">##model.plot(fmt=&#39;--&#39;, xmin=self.opts.axis[0],</span>
+                                <span class="c">#xmax=self.opts.axis[1], label=label)</span>
+
+        <span class="c">### propose x-axis title</span>
+        <span class="c">##self.propose(xlabel=&#39;N&#39;)</span>
+
+    <span class="c">##elif Wmode:</span>
+      <span class="c">### show disorder dependence</span>
+
+      <span class="c">### categorize input data files</span>
+      <span class="c">##psets, inds = self.catinfiles(&#39;scale&#39;)</span>
+
+      <span class="c">### create interpolation function objects</span>
+      <span class="c">##interps = []</span>
+      <span class="c">##for d in self.din:</span>
+        <span class="c">##interps.append(ip.interp1d(d.gdos_energ, d.gdos_dens,</span>
+                            <span class="c">#bounds_error=False, fill_value=0.))</span>
+
+      <span class="c">### set number of colors</span>
+      <span class="c">##self.colors(len(self.opts.energ)*len(psets))</span>
+
+      <span class="c">### plot GDOS data</span>
+      <span class="c">##for pset, ind in zip(psets, inds):</span>
+        <span class="c">##pins = self.pin[ind]</span>
+        <span class="c">##interp = [interps[i] for i in ind]</span>
+        <span class="c">##for e in self.opts.energ:</span>
+          <span class="c">##d = [intp(e) for intp in interp]</span>
+          <span class="c">##x = [p.scale for p in pins]</span>
+          <span class="c">##plt.plot(x, d, &#39;d&#39;, label=&#39;%s E/t=%.2f&#39;</span>
+                            <span class="c">#% (self.nicelabel(pset), e))</span>
+
+      <span class="c">### curve fitting</span>
+      <span class="c">##if self.opts.curve:</span>
+        <span class="c">### cycle categories (parameter combinations)</span>
+        <span class="c">##for pset, ind in zip(psets, inds):</span>
+          <span class="c">##pins = self.pin[ind]</span>
+          <span class="c">##interp = [interps[i] for i in ind]</span>
+          <span class="c">##for e in self.opts.energ:</span>
+            <span class="c">### make fit using least squares algorithm</span>
+            <span class="c">##d = [intp(e) for intp in interp]</span>
+            <span class="c">##x = [p.scale for p in pins]</span>
+            <span class="c">##model.leastsq(x, d)</span>
+
+            <span class="c">### plot fit curve</span>
+            <span class="c">##if self.opts.param:</span>
+              <span class="c">##label = model.paramstr()</span>
+            <span class="c">##else:</span>
+              <span class="c">##label = None</span>
+            <span class="c">##model.plot(fmt=&#39;--&#39;, xmin=self.opts.axis[0],</span>
+                            <span class="c">#xmax=self.opts.axis[1], label=label)</span>
+
+        <span class="c">### propose x-axis title</span>
+        <span class="c">##self.propose(xlabel=&#39;W/t&#39;)</span>
+
+    <span class="c">##else:</span>
+      <span class="c">##self.op.error(&#39;unknown mode: %s&#39; % self.opts.mode)</span>
+
+    <span class="c">### propose y-axis label</span>
+    <span class="c">##if &#39;hop&#39; in self.pin[0]:</span>
+      <span class="c">##self.propose(ylabel=r&#39;GDOS $\rho_{\mathrm{typ}}(E)\, t$&#39;)</span>
+    <span class="c">##elif &#39;coup&#39; in self.pin[0]:</span>
+      <span class="c">##self.propose(ylabel=r&#39;GDOS $\rho_{\mathrm{typ}}(E)\, J_0$&#39;)</span>
+    <span class="c">##else:</span>
+      <span class="c">##self.propose(ylabel=r&#39;GDOS $\rho_{\mathrm{typ}}(E)$&#39;)</span>
+
+    <span class="c">### finish the plot</span>
+    <span class="c">##return self.finish()</span>
+
+
+<span class="c">##class _Pados(hdp.PlotHDP):</span>
+  <span class="c">##&quot;&quot;&quot;Plot the total (arithmetically averaged) density of states (ADOS).&quot;&quot;&quot;</span>
+  <span class="c">##__created__ = &#39;2012-05-11&#39;</span>
+  <span class="c">##__modified__ = &#39;2012-07-18&#39;</span>
+  <span class="c">### based on tb.plot.pgdos from 2012-03-18 until 2012-04-18</span>
+
+  <span class="c">##def __init__(self):</span>
+    <span class="c">##hdp.PlotHDP.__init__(self)</span>
+
+  <span class="c">##def __call__(self, *args, **kwargs):</span>
+    <span class="c">##hdp.PlotHDP.__call__(self, *args, **kwargs)</span>
+    <span class="c">##import matplotlib.pyplot as plt, itertools, numpy</span>
+
+    <span class="c">### load data</span>
+    <span class="c">##self.load(&#39;ados_energ&#39;, &#39;ados_dens&#39;)</span>
+
+    <span class="c">### check that ratio of truncation limit and system size is about equal in</span>
+    <span class="c">### all input files</span>
+    <span class="c">##self.checkratio()</span>
+
+    <span class="c">### cycle input files, sort by filename</span>
+    <span class="c">##for index in numpy.argsort(self.fin):</span>
+      <span class="c">##din = self.din[index]</span>
+      <span class="c">##pin = self.pin[index]</span>
+      <span class="c">##fin = self.fin[index]</span>
+      <span class="c">##plt.plot(din.ados_energ, din.ados_dens,</span>
+               <span class="c">##label=self.nicelabel(pin, default=fin))</span>
+
+    <span class="c">### propose figure properties</span>
+    <span class="c">##if &#39;hop&#39; in self.pin[0]:</span>
+      <span class="c">##self.propose(xlabel=r&#39;$E/t$&#39;,</span>
+                    <span class="c">#ylabel=&#39;ADOS $\\rho_{\mathrm{av}}(E)\, t$&#39;)</span>
+    <span class="c">##elif &#39;coup&#39; in self.pin[0]:</span>
+      <span class="c">##self.propose(xlabel=r&#39;$E/J_0$&#39;,</span>
+                   <span class="c">##ylabel=&#39;ADOS $\\rho_{\mathrm{av}}(E)\, J_0$&#39;)</span>
+    <span class="c">##else:</span>
+      <span class="c">##self.propose(xlabel=r&#39;$E$&#39;, ylabel=&#39;ADOS $\\rho_{\mathrm{av}}(E)$&#39;)</span>
+
+    <span class="c">### finish plot</span>
+    <span class="c">##return self.finish()</span>
+
+
+<span class="c">##class _Pgados(hdp.PlotHDP):</span>
+  <span class="c">##&quot;&quot;&quot;Plot the typical (geometrically averaged) and the total (arithmetically</span>
+  <span class="c">##averaged) density of states (GDOS and ADOS) for comparison.&quot;&quot;&quot;</span>
+  <span class="c">##__created__ = &#39;2012-05-11&#39;</span>
+  <span class="c">##__modified__ = &#39;2012-07-18&#39;</span>
+  <span class="c">### based on tb.plot.pados from 2012-05-11</span>
+
+  <span class="c">##def __init__(self):</span>
+    <span class="c">##hdp.PlotHDP.__init__(self)</span>
+
+  <span class="c">##def __call__(self, *args, **kwargs):</span>
+    <span class="c">##hdp.PlotHDP.__call__(self, *args, **kwargs)</span>
+    <span class="c">##import matplotlib.pyplot as plt, itertools, numpy</span>
+
+    <span class="c">### load data</span>
+    <span class="c">##self.load(&#39;gdos_energ&#39;, &#39;gdos_dens&#39;, &#39;ados_energ&#39;, &#39;ados_dens&#39;)</span>
+
+    <span class="c">### check that ratio of truncation limit and system size is about equal in</span>
+    <span class="c">### all input files</span>
+    <span class="c">##self.checkratio()</span>
+
+    <span class="c">### choose number of colors and use each color twice</span>
+    <span class="c">##self.colors(len(self.fin), each=2)</span>
+
+    <span class="c">### cycle input files, sort by filename</span>
+    <span class="c">##for index in numpy.argsort(self.fin):</span>
+      <span class="c">##din = self.din[index]</span>
+      <span class="c">##pin = self.pin[index]</span>
+      <span class="c">##fin = self.fin[index]</span>
+      <span class="c">##plt.plot(din.gdos_energ, din.gdos_dens, &#39;-.&#39;,</span>
+               <span class="c">##label=&#39;GDOS &#39;+self.nicelabel(pin, default=fin))</span>
+      <span class="c">##plt.plot(din.ados_energ, din.ados_dens,</span>
+               <span class="c">##label=&#39;ADOS &#39;+self.nicelabel(pin, default=fin))</span>
+
+    <span class="c">### propose figure properties</span>
+    <span class="c">##if &#39;hop&#39; in self.pin[0]:</span>
+      <span class="c">##self.propose(xlabel=r&#39;$E/t$&#39;,</span>
+                   <span class="c">##ylabel=&#39;GDOS $\\rho_{\mathrm{typ}}(E)\, t$ &#39;+\</span>
+                          <span class="c">##&#39;and ADOS $\\rho_{\mathrm{av}}(E)\, t$&#39;)</span>
+    <span class="c">##elif &#39;coup&#39; in self.pin[0]:</span>
+      <span class="c">##self.propose(xlabel=r&#39;$E/J_0$&#39;,</span>
+                   <span class="c">##ylabel=&#39;GDOS $\\rho_{\mathrm{typ}}(E)\, J_0$ &#39;+\</span>
+                          <span class="c">##&#39;and ADOS $\\rho_{\mathrm{av}}(E)\, J_0$&#39;)</span>
+    <span class="c">##else:</span>
+      <span class="c">##self.propose(xlabel=r&#39;$E$&#39;,</span>
+                   <span class="c">##ylabel=&#39;GDOS $\\rho_{\mathrm{typ}}(E)$ &#39;+\</span>
+                          <span class="c">##&#39;and ADOS $\\rho_{\mathrm{av}}(E)$&#39;)</span>
+    <span class="c">##self.propose(legend=&#39;on&#39;)</span>
+
+    <span class="c">### finish plot</span>
+    <span class="c">##return self.finish()</span>
+
+</div>
+<div class="viewcode-block" id="repeat_items"><a class="viewcode-back" href="../../plot.html#kpm.plot.repeat_items">[docs]</a><span class="k">def</span> <span class="nf">repeat_items</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return new sequence where each item of the old *sequence* repeats the</span>
+<span class="sd">    given number *n* of times.&quot;&quot;&quot;</span>
+    <span class="n">new</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sequence</span><span class="p">:</span>
+        <span class="n">new</span> <span class="o">+=</span> <span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">*</span><span class="n">n</span>
+    <span class="k">return</span> <span class="n">new</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">kpm 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../kpm.html" >kpm</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Daniel Jung.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

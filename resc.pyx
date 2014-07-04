@@ -25,17 +25,21 @@
 rescale the results obtained by the kernel polynomial method back to the
 original spectrum.
 
-To do:
---> support other matrix formats besides CSR (e.g. dense matrices)
---> support expansions in more than one variable (multivariate functions)
+Background:
 
-Background: The kernel polynomial method (KPM) [1] uses a series expansion
-technique using Chebychev polynomials. These polynomials are defined only
-on the interval [-1, 1].
+The kernel polynomial method (KPM) [1] uses a series expansion technique using
+Chebychev polynomials. These polynomials are defined only on the interval [-1,
+1].
 
 [1] Weiße et al., Rev. Mod. Phys. 78, 275 (2006)"""
+#
+# To do:
+# --> support other matrix formats besides CSR (e.g. dense matrices)
+# --> support expansions in more than one variable (multivariate functions)
+#
 __created__ = '2012-08-06'
 __modified__ = '2012-10-09'
+
 import numpy
 import scipy.sparse
 from cython.parallel import *
@@ -66,30 +70,29 @@ def rescale(mat, erange=None, params=None, omp=True, num_threads=None,
     a, b = rescale(mat, erange=None, params=None, omp=True,
                    num_threads=None, eps=0., copy=False)
 
-    Rescale the given matrix in-place. Specify either an energy range "erange"
-    (2-tuple) or directly the scaling parameters "params" (2-tuple). If "omp"
-    is True, use parallel for-loops (OpenMP). If "num_threads" is not None, set
-    the number of threads. If the number of threads is smaller than 1,
-    determine and use the number of processor cores.
+    Rescale the given matrix *mat* in-place. Specify either an energy range
+    *erange* (2-tuple) or directly the scaling parameters *params* (2-tuple).
+    If *omp* is *True*, use parallel for-loops (OpenMP). If *num_threads* is
+    not *None*, set the number of threads. If the number of threads is smaller
+    than 1, determine and use the number of processor cores.
 
-    The matrix will be rescaled in-place like mat=(mat-b)/a, if a and b are the
-    two scaling parameters. Instead of the parameters itself, an energy range
-    can be specified. The eigenspectrum of the matrix should fit well into the
-    given energy range. The scaling parameters are then calculated via
-    a=(emax-emin)/(2-eps) and b=(emax+emin)/2, where (emin, emax) is the given
-    energy range. An additional small number "eps" can be specified to get sure
-    that the spectrum lies well inside the chosen energy range. For the Jackson
-    kernel (see the submodule "kern"), eps=pi/limit is said to be an excellent
-    choice [1], where limit is the number of moments (truncation limit) of the
-    Chebychev expansion.
+    The matrix will be rescaled in-place like ``mat=(mat-b)/a``, if *a* and *b*
+    are the two scaling parameters. Instead of the parameters itself, an energy
+    range can be specified. The eigenspectrum of the matrix should fit well
+    into the given energy range. The scaling parameters are then calculated via
+    ``a=(emax-emin)/(2-eps)`` and ``b=(emax+emin)/2``, where ``(emin, emax)``
+    is the given energy range. An additional small number *eps* can be
+    specified to make sure that the spectrum lies well inside the chosen energy
+    range. For the Jackson kernel (see the submodule :mod:`kern`),
+    ``eps=pi/limit`` is said to be an excellent choice [1], where limit is the
+    number of moments (truncation limit) of the Chebychev expansion.
 
     This function delegates the actual work to one of the low-level functions,
     all beginning with "_rescale_", depending on the matrix type, data type and
     OpenMP-parallelization requirements. If no appropriate low-level function
     is found, then the plain Python implementation "_rescale" is used.
 
-    [1] Weiße et al., Rev. Mod. Phys. 78, 275 (2006).
-    """
+    [1] Weiße et al., Rev. Mod. Phys. 78, 275 (2006)."""
     __created__ = '2012-08-13'
     __modified__ = '2012-10-09'
     # based on tb.kpm.KPMHDP.rescale developed from 2011-11-29 to 2012-07-16
@@ -250,14 +253,13 @@ def get_erange(mat, extra=0.):
 
     If the (energy) spectrum of the (tight binding) matrix is completely
     unknown, this function can be used to estimate the highest and lowest
-    (energy) eigenvalue by means of the Lanczos algorithm. (However, most of
-    the time one should have a fairly good idea of the (energy) range already
-    from the model that is used.)
+    (energy) eigenvalue by means of the Lanczos algorithm. However, most of the
+    time one should have a fairly good idea of the (energy) range already from
+    the model that is used.
 
-    A small factor "extra" may be given, the returned (energy) range is
-    enlarged by that factor to be sure that the whole (energy) spectrum of the
-    given matrix is really contained in the returned range.
-    """
+    A small factor *extra* may be given, the returned (energy) range is
+    enlarged by that factor to ensure that the whole (energy) spectrum of the
+    given matrix is really contained in the returned range."""
     __created__ = '2012-08-15'
     __modified__ = '2012-08-22'
     # based on tb.kpm.KPMHDP.get_erange, developed from 2011-11-29 to
@@ -281,16 +283,16 @@ def get_erange(mat, extra=0.):
 def erange2params(erange, eps=0.):
     """a, b = erange2params(erange, eps=0.)
 
-    Calculate the scaling parameters "a" and "b" from the given energy range
-    (2-tuple), like a=(emax-emin)/(2-eps) and b=(emax+emin)/2, where (emin,
-    emax) is the given energy range "erange". An additional small number "eps"
-    can be specified to make sure that the spectrum lies well inside the chosen
-    energy range. For the Jackson kernel (see the submodule "kern"),
-    eps=pi/limit is said to be an excellent choice [1], where limit is the
-    number of moments (truncation limit) of the Chebychev expansion.
+    Calculate the scaling parameters *a* and *b* from the given energy range
+    (2-tuple), like ``a=(emax-emin)/(2-eps)`` and ``b=(emax+emin)/2``, where
+    ``(emin, emax)`` is the given energy range *erange*. An additional small
+    number *eps* can be specified to make sure that the spectrum lies well
+    inside the chosen energy range. For the Jackson kernel (see the submodule
+    :mod:`kern`), ``eps=pi/limit`` is said to be an excellent choice [1], where
+    limit is the number of moments (truncation limit) of the Chebychev
+    expansion.
 
-    [1] Weiße et al., Rev. Mod. Phys. 78, 275 (2006).
-    """
+    [1] Weiße et al., Rev. Mod. Phys. 78, 275 (2006)."""
     __created__ = '2012-08-22'
     emin, emax = _opt2erange(erange)
     a = (emax - emin) / (2 - eps)
@@ -308,12 +310,11 @@ def inverse_rescale(disc, params):
 
     Scale the x-axis (discretization axis) of the quantity that has been
     calculated with the kernel polynomial method back to its original energy
-    range. "params" is expecting a 2-tuple, containing the scaling parameters
-    "a" and "b" that have been used before to rescale the matrix.
+    range. *params* is expecting a 2-tuple, containing the scaling parameters
+    *a* and *b* that have been used before to rescale the matrix.
 
-    The given discretization array "disc" is inversly rescaled like disc*a+b.
-
-    """
+    The given discretization array *disc* is inversly rescaled like
+    ``disc*a+b``."""
     __created__ = '2012-08-22'
     try:
         a, b = params
@@ -328,8 +329,8 @@ def inverse_rescale_density(energ, dens, params):
     Special case for densities that are calculated with the kernel polynomial
     method [1], where not only the energy axis (discretization) is scaled back
     to the original energy range of the matrix spectrum, but also the density
-    itself is devided by the parameter "a", so that the density keeps
-    its normalization."""
+    itself is devided by the parameter *a*, so that the density keeps its
+    normalization."""
     __created__ = '2012-08-22'
     try:
         a, b = params
@@ -341,8 +342,8 @@ def inverse_rescale_density(energ, dens, params):
 def inverse_rescale_density_cofunc(obj, params):
     """new_cofunc = inverse_rescale_density_cofunc(cofunc, params)
 
-    Same as "inverse_rescale_density", but accepts and returns a
-    cofunc.coFunc object from the cofunc-module."""
+    Same as :func:`inverse_rescale_density`, but accepts and returns a
+    :class:`cofunc.coFunc` object from the module :mod:`cofunc`."""
     __created__ = '2012-08-22'
     return cofunc.coFunc(*inverse_rescale_density(obj.x, obj.y, params))
 

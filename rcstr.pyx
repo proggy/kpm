@@ -21,17 +21,18 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 #
-"""Reconstruct the target function, using different methods.
-
-To do:
---> implement fast cosine transform (FCT) algorithm
---> create pure Python versions for all the algorithms
---> implement fast Fourier transform (FFT) algorithm
---> implement discrete Fourier transform (DFT) algorithm
---> add VMKPM variants (given a mapping energy -> moment)
-"""
+"""Reconstruct the target function, using different methods."""
+#
+# To do:
+# --> implement fast cosine transform (FCT) algorithm
+# --> create pure Python versions for all the algorithms
+# --> implement fast Fourier transform (FFT) algorithm
+# --> implement discrete Fourier transform (DFT) algorithm
+# --> add VMKPM variants (given a mapping energy -> moment)
+#
 __created__ = '2012-08-06'
 __modified__ = '2014-02-08'
+
 import cython
 import numpy
 cimport libc.math
@@ -43,10 +44,10 @@ import misc
 
 
 def select(string, many=False):
-    """select(string)
+    """select(string, many=False)
 
-    Select one of the reconstruction methods defined in this module by a
-    given string. For example, this could be an option string from a command
+    Select one of the reconstruction methods defined in this module by the
+    given *string*. For example, this could be an option string from a command
     line option."""
     __created__ = '2012-08-20'
     __modified__ = '2012-08-20'
@@ -97,22 +98,22 @@ def std(moments, disc, varmom=None, omp=True, num_threads=None, out=None):
         num_threads=None, out=None)
 
     Reconstruct target function using the "naive" Chebychev series
-    expansion. A user-defined x-axis discretization "disc" has to be specified.
+    expansion. A user-defined x-axis discretization *disc* has to be specified.
 
     This function only delegates the work to the corresponding low-level
     functions, all beginning with "_std_". If no optimal low-level function is
     found for the given datatype, the plain Python implementation "_std"
     is used.
 
-    If "omp" is True, use available OpenMP-parallelized variants of the
-    algorithms. If "num_threads" is not None, set the number of threads
-    accordingly. If "num_threads" is smaller than 1, determine and use the
+    If *omp* is *True*, use available OpenMP-parallelized variants of the
+    algorithms. If *num_threads* is not *None*, set the number of threads
+    accordingly. If *num_threads* is smaller than 1, determine and use the
     number of processor cores.
 
-    If "varmom" is given, use a variable moments approach. "varmom" has to have
-    the same shape as "disc", specifying a truncation limit for each
-    discretization step. The values of "varmom" must not be greater than the
-    length of "moments"."""
+    If *varmom* is given, use a variable moments approach. *varmom* has to have
+    the same shape as *disc*, specifying a truncation limit for each
+    discretization step. The values of *varmom* must not be greater than the
+    length of *moments*."""
     # 2012-08-18 - 2014-02-08
     # based on tb.kpm2.kern.jackson (2012-08-14)
     if type(moments) is not numpy.ndarray:
@@ -152,18 +153,18 @@ def std_many(moments, disc, limits=None, omp=True, num_threads=None,
     """std(moments, disc, limits=None, omp=True, num_threads=None, out=None)
 
     Reconstruct many versions of the target function at once, each for a
-    different truncation limit. Use the "naive" Chebychev series expansion.
-    A user-defined x-axis discretization "disc" has to be specified. If limits
-    is None, default to the number of moments.
+    different truncation limit. Use the "naive" Chebychev series expansion.  A
+    user-defined x-axis discretization *disc* has to be specified. If *limits*
+    is *None*, default to the number of moments.
 
     This function only delegates the work to the corresponding low-level
     functions, all beginning with "_std_". If no optimal low-level function is
     found for the given datatype, the plain Python implementation "_std"
     is used.
 
-    If "omp" is True, use available OpenMP-parallelized variants of the
-    algorithms. If "num_threads" is not None, set the number of threads
-    accordingly. If "num_threads" is smaller than 1, determine and use the
+    If *omp* is *True*, use available OpenMP-parallelized variants of the
+    algorithms. If *num_threads* is not *None*, set the number of threads
+    accordingly. If *num_threads* is smaller than 1, determine and use the
     number of processor cores."""
     __created__ = '2013-05-31'
     __modified__ = '2013-06-01'
@@ -873,9 +874,9 @@ def _std_complex_omp_many(numpy.ndarray[complex, mode='c']         moments,
 def dct(moments, ndisc=None, omp=True, num_threads=None, out=None):
     """dct(moments, ndisc=None, omp=True, num_threads=None, out=None)
 
-    Reconstruct target function using discrete cosine transformation. Use
-    the function "disc.cosine(ndisc)" from the "disc" submodule with the same
-    number of discretization steps "ndisc" like here to get the corresponding
+    Reconstruct target function using discrete cosine transformation. Use the
+    function :func:`disc.cosine` from the :mod:`disc` submodule with the same
+    number of discretization steps *ndisc* as here to get the corresponding
     x-axis discretization, otherwise, the returned target function values are
     not valid.
 
@@ -884,9 +885,9 @@ def dct(moments, ndisc=None, omp=True, num_threads=None, out=None):
     found for the given datatype, the plain Python implementation "_std"
     is used.
 
-    If "omp" is True, use available OpenMP-parallelized variants of the
-    algorithms. If "num_threads" is not None, set the number of threads
-    accordingly. If "num_threads" is smaller than 1, determine and use the
+    If *omp* is *True*, use available OpenMP-parallelized variants of the
+    algorithms. If *num_threads* is not *None*, set the number of threads
+    accordingly. If *num_threads* is smaller than 1, determine and use the
     number of processor cores."""
     __created__ = '2012-08-20'
     __modified__ = '2012-08-20'
@@ -1139,16 +1140,13 @@ def _dct_complex_omp(numpy.ndarray[complex, mode='c'] moments,
 
 def fct(moments, ndisc=None, out=None):
     """Use discrete cosine transform to reconstruct target function. Use
-    "ndisc" discretization steps. If "ndisc" is None, set ndisc=2*limit, where
-    limit is the number of moments (truncation limit). If out is None, return
-    the results, otherwise save them to the given array.
+    *ndisc* discretization steps. If *ndisc* is *None*, set ndisc=2*limit,
+    where limit is the number of moments (truncation limit). If *out* is
+    *None*, return the results, otherwise save them to the given array.
 
-    This function uses scipy.fftpack.dct.
-
-    """
+    This function uses :func:`scipy.fftpack.dct`."""
     __created__ = '2012-08-18'
     __modified__ = '2013-06-25'
-
     raise NotImplementedError
 
 
@@ -1168,7 +1166,6 @@ def dft(moments):
     """Reconstruct target function using discrete fourier transform."""
     __created__ = '2012-08-18'
     __modified__ = '2012-08-18'
-
     raise NotImplementedError
 
 
@@ -1188,7 +1185,6 @@ def fft(moments):
     """Reconstruct target function using fast fourier transform algorithm."""
     __created__ = '2012-08-18'
     __modified__ = '2012-08-18'
-
     raise NotImplementedError
 
 
